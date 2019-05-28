@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from goal.goal_building import GoalBuilding
+from swarm_bots.goal.goal_building import GoalBuilding
 
 
 class TestGoalBuilding(unittest.TestCase):

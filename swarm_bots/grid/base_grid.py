@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from grid.tile_already_added_exception import TileAlreadyAddedException
+from swarm_bots.grid.tile_already_added_exception import TileAlreadyAddedException
 from swarm_bots.grid.tile_exists_exception import TileExistsException
 from swarm_bots.tiles.tile import Tile
 from swarm_bots.utils.coordinates import Coordinates
