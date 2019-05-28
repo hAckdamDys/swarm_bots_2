@@ -1,2 +1,2 @@
-class TileExistsException(ValueError):
+class TileTakenException(ValueError):
     pass

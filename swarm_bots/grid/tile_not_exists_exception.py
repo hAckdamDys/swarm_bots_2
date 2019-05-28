@@ -1,0 +1,2 @@
+class TileNotExistsException(ValueError):
+    pass

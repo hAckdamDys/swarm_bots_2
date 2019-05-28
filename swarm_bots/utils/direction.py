@@ -15,5 +15,5 @@ class Direction(Enum):
         return self.value == Direction.LEFT.value or self.value == Direction.RIGHT.value
 
     # this class is needed to know if x or y will rise when go forward
-    def is_right_or_down(self):
-        return self.value == Direction.RIGHT.value or self.value == Direction.DOWN.value
+    def is_x_or_y_rising(self):
+        return self.value == Direction.RIGHT.value or self.value == Direction.UP.value

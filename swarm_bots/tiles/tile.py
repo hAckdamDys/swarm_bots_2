@@ -18,3 +18,11 @@ class Tile:
 
     def get_type(self) -> TileType:
         return self.tile_type
+
+    def __eq__(self, other):
+        if not isinstance(other, Tile):
+            return NotImplemented
+        return self.id == other.id and self.tile_type == other.tile_type
+
+    def __str__(self):
+        return "{Tile: {id: "+str(self.id)+", tile_type: "+str(self.tile_type)+"}}"
