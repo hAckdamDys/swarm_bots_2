@@ -3,7 +3,7 @@ from setuptools import setup
 with open('readme.md') as f:
     readme = f.read()
 
-setup(name='SwarmBots',
+setup(name='swarm_bots',
       version='0.1',
       description='Multi-robot system coordination using swarm intelligence.',
       long_description=readme,
@@ -11,5 +11,5 @@ setup(name='SwarmBots',
       author='Adam Dyszy',
       author_email='electro.ubro@gmail.com',
       license='MIT',
-      packages=['SwarmBots']
+      packages=['swarm_bots']
       )
