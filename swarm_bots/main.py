@@ -9,6 +9,7 @@ def main():
         0 0 0 0 0 0
         0 0 0 0 0 0
         """)
+    print(goal_building)
 
 
 if __name__ == '__main__':

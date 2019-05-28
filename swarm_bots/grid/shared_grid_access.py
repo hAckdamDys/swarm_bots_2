@@ -1,4 +1,3 @@
-import copy
 from multiprocessing import Manager
 
 from swarm_bots.grid.base_grid import BaseGrid

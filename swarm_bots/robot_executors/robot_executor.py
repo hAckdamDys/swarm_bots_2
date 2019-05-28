@@ -3,6 +3,7 @@ import abc
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.tiles.robot import Robot
 
+
 class RobotExecutor(metaclass=abc.ABCMeta):
     def __init__(self, robot: Robot, shared_grid_access: SharedGridAccess):
         self.robot = robot
