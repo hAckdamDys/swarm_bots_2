@@ -37,7 +37,7 @@ class BaseGrid:
         coordinates = self.coordinates_from_index.get(tile.get_id())
         if coordinates is None:
             raise TileNotExistsException("tile: (" + str(tile) + ") was not added")
-        print("coord from tile: ", tile, "was", coordinates)
+        # print("coord from tile: ", tile, "was", coordinates)
         return coordinates
 
     def add_tile_to_grid(self, tile: Tile, coordinates: Coordinates):
@@ -69,6 +69,8 @@ class BaseGrid:
         self.coordinates_from_index[tile.get_id()] = coordinates
         self.tile_grid[previous_coordinates.get_array_index()] = BaseGrid.empty_tile_id
         self.tile_grid[coordinates.get_array_index()] = tile.get_id()
+        self.tiles_from_index[tile.get_id()] = tile
+        print("aba", self)
 
     def remove_tile_from_grid(self, coordinates: Coordinates):
         tile_index = self.tile_grid[coordinates.get_array_index()]

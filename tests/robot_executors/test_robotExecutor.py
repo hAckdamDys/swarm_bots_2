@@ -73,7 +73,5 @@ class TestRobotExecutor(TestCase):
         robot2_executor.start_working()
 
         robot1_executor.wait_for_finish()
-        robot1: Union[Robot, Tile] = shared_grid_access.grid.get_tile_from_grid(robot1_coordinates)
-        print("test", robot1)
         robot2_executor.wait_for_finish()
         assert robot1.rotation == robot1_future_rotate
