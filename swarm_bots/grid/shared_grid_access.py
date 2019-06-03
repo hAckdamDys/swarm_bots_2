@@ -78,6 +78,8 @@ class SharedGridAccess:
         SharedGridAccess._get_robot_coordinates(grid, robot)
 
     def try_rotate_robot(self, robot: Robot, direction: Direction) -> HitInformation:
+        # we need to make copy to not mess with input robot
+        robot = robot.copy()
         with self.grid_lock_sync as grid:
             try:
                 self._validate_robot(grid, robot)
@@ -88,6 +90,8 @@ class SharedGridAccess:
             return HitInformation(HitType.NO_HIT)
 
     def try_move_robot(self, robot: Robot, direction: Direction) -> HitInformation:
+        # we need to make copy to not mess with input robot
+        robot = robot.copy()
         with self.grid_lock_sync as grid:
             try:
                 coordinates = self._get_robot_coordinates(grid, robot)
@@ -109,9 +113,15 @@ class SharedGridAccess:
 
     # returns HitType.PLACED_BLOCK if placed block correctly
     def try_put_block(self, robot: Robot, direction: Direction) -> HitInformation:
+        # we need to make copy to not mess with input robot
+        robot = robot.copy()
         with self.grid_lock_sync as grid:
             try:
                 coordinates = self._get_robot_coordinates(grid, robot)
+            except RuntimeError as e:
+                return HitInformation(HitType.ERROR, e)
+            try:
+                robot.validate_put_block_direction(direction)
             except RuntimeError as e:
                 return HitInformation(HitType.ERROR, e)
             block_coordinates = coordinates.create_neighbour_coordinate(direction)

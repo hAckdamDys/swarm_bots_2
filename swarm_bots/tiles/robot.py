@@ -1,8 +1,10 @@
+import copy
 from typing import Union
 
 from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
 from swarm_bots.tiles.no_inner_block_error import NoInnerBlockError
 from swarm_bots.tiles.tile import Tile, TileType
+from swarm_bots.tiles.wrong_block_put_direction import WrongBlockPutDirection
 from swarm_bots.tiles.wrong_block_type_error import WrongBlockTypeError
 from swarm_bots.utils.direction import Direction
 
@@ -17,6 +19,12 @@ class Robot(Tile):
         # robot can move forward or backwards so needs same axis
         if self.rotation.is_x_axis() != direction.is_x_axis():
             raise ImpossibleRobotMovementError(f"cannot move robot: {self} to direction {direction}")
+
+    def validate_put_block_direction(self, direction: Direction):
+        if self.inner_block is None:
+            raise NoInnerBlockError("cannot get block from nothing")
+        if self.rotation != direction:
+            raise WrongBlockPutDirection("cannot put block not in front")
 
     def rotate_to_direction(self, direction: Direction):
         self.rotation = direction
@@ -45,3 +53,9 @@ class Robot(Tile):
         super_str += f", rotation: {self.rotation}"
         super_str += f", inner_block: {self.inner_block}"
         return super_str + super_str_end
+
+    def __copy__(self):
+        return copy.deepcopy(self)
+
+    def copy(self):
+        return self.__copy__()

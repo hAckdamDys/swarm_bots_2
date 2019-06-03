@@ -67,8 +67,6 @@ class BaseGrid:
         tile_on_coordinates = self.get_tile_from_grid(coordinates)
         if tile_on_coordinates is not None:
             if tile_on_coordinates.id != tile.id:
-                print("tile on coordinates", tile_on_coordinates)
-                print("tile not on coordinates", tile)
                 raise TileTakenException(tile_on_coordinates,
                                          f"there is already tile: ({str(tile)}) on {str(coordinates)}")
             # else it means we move to same tile we were on
