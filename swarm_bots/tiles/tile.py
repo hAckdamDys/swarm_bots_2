@@ -6,6 +6,7 @@ class TileType(enum.Enum):
     BLOCK = 0
     ROBOT = 1
     OBSTACLE = 2
+    SOURCE = 3
 
 
 class Tile:

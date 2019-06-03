@@ -1,7 +1,6 @@
 from multiprocessing import Manager
 from unittest import TestCase
 
-from swarm_bots.goal.goal_building import GoalBuilding
 from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.tiles.robot import Robot
@@ -15,7 +14,6 @@ class TestSharedGridAccess(TestCase):
 
         robot1 = Robot(Direction.UP)
         robot1_coordinates = Coordinates(2, 2)
-        robot1_coordinates_2 = Coordinates(2, 3)
 
         robot2 = Robot(Direction.RIGHT)
         robot2_coordinates = Coordinates(1, 3)

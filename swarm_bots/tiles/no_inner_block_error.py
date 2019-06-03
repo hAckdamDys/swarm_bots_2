@@ -1,0 +1,2 @@
+class NoInnerBlockError(RuntimeError):
+    pass

@@ -1,0 +1,2 @@
+class WrongBlockTypeError(RuntimeError):
+    pass
