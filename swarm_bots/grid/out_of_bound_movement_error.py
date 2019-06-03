@@ -1,0 +1,2 @@
+class OutOfBoundMovementError(RuntimeError):
+    pass

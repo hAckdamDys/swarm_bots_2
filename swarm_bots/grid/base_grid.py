@@ -3,6 +3,7 @@ import copy
 import numpy as np
 
 from swarm_bots.grid.add_duplicate_tile_error import AddDuplicateTileError
+from swarm_bots.grid.out_of_bound_movement_error import OutOfBoundMovementError
 from swarm_bots.grid.tile_already_added_exception import TileAlreadyAddedException
 from swarm_bots.grid.tile_exists_exception import TileTakenException
 from swarm_bots.grid.tile_not_exists_exception import TileNotExistsException
@@ -56,9 +57,12 @@ class BaseGrid:
     def move_tile_on_grid(self, tile: Tile, coordinates: Coordinates):
         if self.tiles_from_index.get(tile.get_id()) is None:
             raise TileNotExistsException("tile: (" + str(tile) + ") was not added")
-        tile_on_coordinates = self.get_tile_from_grid(coordinates)
+        try:
+            tile_on_coordinates = self.get_tile_from_grid(coordinates)
+        except IndexError as e:
+            raise OutOfBoundMovementError(e.args)
         if tile_on_coordinates is not None:
-            if tile_on_coordinates != tile:
+            if tile_on_coordinates.id != tile.id:
                 print("tile on coordinates", tile_on_coordinates)
                 print("tile not on coordinates", tile)
                 raise TileTakenException(tile_on_coordinates, f"there is already tile: ({str(tile)}) on {str(coordinates)}")
@@ -70,7 +74,6 @@ class BaseGrid:
         self.tile_grid[previous_coordinates.get_array_index()] = BaseGrid.empty_tile_id
         self.tile_grid[coordinates.get_array_index()] = tile.get_id()
         self.tiles_from_index[tile.get_id()] = tile
-        print("aba", self)
 
     def remove_tile_from_grid(self, coordinates: Coordinates):
         tile_index = self.tile_grid[coordinates.get_array_index()]

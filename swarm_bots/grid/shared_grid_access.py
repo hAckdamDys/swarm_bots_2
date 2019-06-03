@@ -2,6 +2,7 @@ from multiprocessing import Manager
 from threading import Lock
 
 from swarm_bots.grid.base_grid import BaseGrid
+from swarm_bots.grid.out_of_bound_movement_error import OutOfBoundMovementError
 from swarm_bots.grid.tile_exists_exception import TileTakenException
 from swarm_bots.robot_executors.hit_information import HitInformation, HitType
 from swarm_bots.robot_executors.wrong_tile_error import WrongTileError
@@ -91,8 +92,14 @@ class SharedGridAccess:
             new_coordinates = coordinates.create_neighbour_coordinate(direction)
             try:
                 grid.move_tile_on_grid(robot, new_coordinates)
-            except TileTakenException as t:
-                tile = t.get_tile()
+            except TileTakenException as e:
+                tile = e.get_tile()
                 return HitInformation(HitType.from_tile_type(tile.get_type()))
+            except OutOfBoundMovementError as e:
+                return HitInformation(HitType.ERROR, e)
             # TODO: add out of bounds action
             return HitInformation(HitType.NO_HIT)
+
+    def try_put_block(self, robot: Robot, direction: Direction) -> HitInformation:
+        # TODO: add later
+        raise NotImplementedError()

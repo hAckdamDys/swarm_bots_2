@@ -1,16 +1,14 @@
 from enum import Enum
 
 from swarm_bots.tiles.tile import TileType
-from swarm_bots.utils.coordinates import Coordinates
 
 
 class HitType(Enum):
-    OUT_OF_BOUND = 0
-    ROBOT = 1
-    BLOCK = 2
-    OBSTACLE = 3
-    NO_HIT = 4
-    ERROR = 5
+    ROBOT = 0
+    BLOCK = 1
+    OBSTACLE = 2
+    NO_HIT = 3
+    ERROR = 4
 
     @staticmethod
     def from_tile_type(tile_type: TileType) -> 'HitType':
