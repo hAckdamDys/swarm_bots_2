@@ -1,0 +1,2 @@
+class WrongTileError(RuntimeError):
+    pass

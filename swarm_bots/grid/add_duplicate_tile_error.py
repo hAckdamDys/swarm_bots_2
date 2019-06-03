@@ -1,2 +1,2 @@
-class AddDuplicateTileError(ValueError):
+class AddDuplicateTileError(RuntimeError):
     pass

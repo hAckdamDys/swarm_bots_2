@@ -1,2 +1,2 @@
-class TileAlreadyAddedException(ValueError):
+class TileAlreadyAddedException(RuntimeError):
     pass

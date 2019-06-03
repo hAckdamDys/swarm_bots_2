@@ -1,0 +1,2 @@
+class ImpossibleRobotMovementError(RuntimeError):
+    pass

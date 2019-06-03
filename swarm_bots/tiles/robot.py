@@ -1,3 +1,4 @@
+from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
 from swarm_bots.tiles.tile import Tile, TileType
 from swarm_bots.utils.direction import Direction
 
@@ -7,7 +8,22 @@ class Robot(Tile):
         super().__init__(TileType.ROBOT)
         self.rotation = rotation
 
-    def __eq__(self, other):
-        if not isinstance(other, Robot):
-            return NotImplemented
-        return super().__eq__(other) and self.rotation == other.rotation
+    def validate_movement_direction(self, direction: Direction):
+        # robot can move forward or backwards so needs same axis
+        if self.rotation.is_x_axis() != direction.is_x_axis():
+            raise ImpossibleRobotMovementError(f"cannot move robot: {self} to direction {direction}")
+
+    def rotate_to_direction(self, direction: Direction):
+        self.rotation = direction
+
+    # def __eq__(self, other):
+    #     if not isinstance(other, Robot):
+    #         return NotImplemented
+    #     return super().__eq__(other) and self.rotation == other.rotation
+
+    def __str__(self):
+        super_str = super().__str__()
+        super_str_end = super_str[-2:]
+        super_str = super_str[:-2]
+        super_str += f", rotation: {self.rotation}"
+        return super_str + super_str_end
