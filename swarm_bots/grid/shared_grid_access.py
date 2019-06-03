@@ -2,7 +2,7 @@ from multiprocessing import Manager
 from threading import Lock
 
 from swarm_bots.grid.base_grid import BaseGrid
-from swarm_bots.grid.out_of_bound_movement_error import OutOfBoundMovementError
+from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
 from swarm_bots.grid.tile_exists_exception import TileTakenException
 from swarm_bots.robot_executors.hit_information import HitInformation, HitType
 from swarm_bots.robot_executors.wrong_tile_error import WrongTileError
@@ -63,27 +63,35 @@ class SharedGridAccess:
 
     @staticmethod
     def _get_robot_coordinates(grid: BaseGrid, robot: Robot) -> Coordinates:
-        coordinates = grid.get_coord_from_tile(robot)
-        robot_grid_instance = grid.get_tile_from_grid(coordinates)
+        try:
+            coordinates = grid.get_coord_from_tile(robot)
+            robot_grid_instance = grid.get_tile_from_grid(coordinates)
+        except RuntimeError as e:
+            raise WrongTileError(f"difference between robot: {robot}, tile on grid with error: {e}")
         if robot != robot_grid_instance:
             raise WrongTileError(f"difference between robot: {robot}, and tile on grid: {robot_grid_instance}")
         return coordinates
 
+    # method to validate robot is the same as in shared grid
+    @staticmethod
+    def _validate_robot(grid: BaseGrid, robot: Robot):
+        SharedGridAccess._get_robot_coordinates(grid, robot)
+
     def try_rotate_robot(self, robot: Robot, direction: Direction) -> HitInformation:
         with self.grid_lock_sync as grid:
             try:
-                coordinates = self._get_robot_coordinates(grid, robot)
-            except RuntimeError as e:
+                self._validate_robot(grid, robot)
+            except WrongTileError as e:
                 return HitInformation(HitType.ERROR, e)
             robot.rotate_to_direction(direction)
-            grid.move_tile_on_grid(robot, coordinates)
+            grid.update_tile(robot)
             return HitInformation(HitType.NO_HIT)
 
     def try_move_robot(self, robot: Robot, direction: Direction) -> HitInformation:
         with self.grid_lock_sync as grid:
             try:
                 coordinates = self._get_robot_coordinates(grid, robot)
-            except RuntimeError as e:
+            except WrongTileError as e:
                 return HitInformation(HitType.ERROR, e)
             try:
                 robot.validate_movement_direction(direction)
@@ -94,12 +102,25 @@ class SharedGridAccess:
                 grid.move_tile_on_grid(robot, new_coordinates)
             except TileTakenException as e:
                 tile = e.get_tile()
-                return HitInformation(HitType.from_tile_type(tile.get_type()))
-            except OutOfBoundMovementError as e:
+                return HitInformation(HitType.from_tile_type(tile.get_type()), e)
+            except OutOfBoundCoordinatesError as e:
                 return HitInformation(HitType.ERROR, e)
-            # TODO: add out of bounds action
             return HitInformation(HitType.NO_HIT)
 
+    # returns HitType.PLACED_BLOCK if placed block correctly
     def try_put_block(self, robot: Robot, direction: Direction) -> HitInformation:
-        # TODO: add later
-        raise NotImplementedError()
+        with self.grid_lock_sync as grid:
+            try:
+                coordinates = self._get_robot_coordinates(grid, robot)
+            except RuntimeError as e:
+                return HitInformation(HitType.ERROR, e)
+            block_coordinates = coordinates.create_neighbour_coordinate(direction)
+            try:
+                grid.add_tile_to_grid(robot.pop_block(), block_coordinates)
+            except OutOfBoundCoordinatesError as e:
+                return HitInformation(HitType.ERROR, e)
+            except TileTakenException as e:
+                tile = e.get_tile()
+                return HitInformation(HitType.from_tile_type(tile.get_type()), e)
+            grid.update_tile(robot)
+            return HitInformation(HitType.PLACED_BLOCK)

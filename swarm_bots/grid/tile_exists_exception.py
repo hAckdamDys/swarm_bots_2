@@ -6,5 +6,5 @@ class TileTakenException(RuntimeError):
         super().__init__(*args)
         self.tile = tile
 
-    def get_tile(self):
+    def get_tile(self) -> Tile:
         return self.tile

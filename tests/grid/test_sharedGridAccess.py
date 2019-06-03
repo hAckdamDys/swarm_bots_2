@@ -2,7 +2,7 @@ from multiprocessing import Manager
 from unittest import TestCase
 
 from swarm_bots.grid.base_grid import BaseGrid
-from swarm_bots.grid.out_of_bound_movement_error import OutOfBoundMovementError
+from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.hit_information import HitType
 from swarm_bots.tiles.robot import Robot
@@ -44,7 +44,7 @@ class TestSharedGridAccess(TestCase):
         shared_grid_access = SharedGridAccess(base_grid, Manager())
         h_info = shared_grid_access.try_move_robot(robot1, Direction.UP)
         assert h_info.hit_type == HitType.ERROR
-        assert isinstance(h_info.inner_error, OutOfBoundMovementError)
+        assert isinstance(h_info.inner_error, OutOfBoundCoordinatesError)
         with shared_grid_access.grid_lock_sync as grid:
             assert grid.get_tile_from_grid(robot1_coordinates) == robot1
             print(grid)
