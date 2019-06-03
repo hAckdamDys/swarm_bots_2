@@ -1,15 +1,12 @@
 from multiprocessing import Manager
 from threading import Lock
-from typing import Union, Callable
 
 from swarm_bots.grid.base_grid import BaseGrid
-from swarm_bots.grid.simulation_started_error import SimulationStartedError
 from swarm_bots.grid.tile_exists_exception import TileTakenException
 from swarm_bots.robot_executors.hit_information import HitInformation, HitType
 from swarm_bots.robot_executors.wrong_tile_error import WrongTileError
 from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
 from swarm_bots.tiles.robot import Robot
-from swarm_bots.tiles.tile import Tile
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.utils.direction import Direction
 
@@ -32,6 +29,7 @@ class GridLockSync:
         self.sync_grid()
         return self.grid
 
+    # noinspection PyShadowingBuiltins
     def __exit__(self, type, value, traceback):
         self.update_grid()
         self.lock.release()
