@@ -48,7 +48,7 @@ class SharedGridAccess:
     def __init__(self, grid: BaseGrid, manager: Manager):
         self.grid_lock_sync = GridLockSync(grid, manager)
         # when simulation is not started we can add elements and do more
-        self.simulation_started = False
+        # self.simulation_started = False
 
     def get_private_copy(self):
         with self.grid_lock_sync as grid:
@@ -148,6 +148,3 @@ class SharedGridAccess:
                     WrongTileError, HasInnerBlockError, WrongBlockGetDirection) as e:
                 return HitInformation(HitType.ERROR, e)
             return HitInformation(HitType.GOT_BLOCK, updated_robot=robot)
-
-
-

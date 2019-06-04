@@ -5,10 +5,27 @@ from unittest import TestCase
 from swarm_bots.goal.goal_building import GoalBuilding
 from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
+from swarm_bots.robot_executors.hit_information import HitType
 from swarm_bots.robot_executors.robot_executor import RobotExecutor
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.utils.direction import Direction
+
+
+class RobotRotateMoveMockExecutor(RobotExecutor):
+    def __init__(self, rotate: Direction, move: Direction, robot: Robot,
+                 shared_grid_access: SharedGridAccess, goal_building: GoalBuilding):
+        super().__init__(robot, shared_grid_access, goal_building)
+        self.move = move
+        self.rotate = rotate
+
+    def start_process(self):
+        if self.rotate is not None:
+            h_info = self.try_rotate_robot(self.rotate)
+            assert h_info.hit_type == HitType.ROTATED
+        if self.move is not None:
+            h_info = self.try_move_robot(self.move)
+            assert h_info.hit_type == HitType.NO_HIT
 
 
 class RobotExecutorMockRotate(RobotExecutor):
@@ -173,7 +190,49 @@ class TestRobotExecutor(TestCase):
 
         with shared_grid_access.grid_lock_sync as grid:
             robot1_new = grid.get_tile_from_grid(robot2_executor.r1_c)
-            assert robot1.id == robot1_new.id
+            assert robot1 == robot1_new
             robot2_new = grid.get_tile_from_grid(robot2_executor.r2_c)
-            assert robot2.id == robot2_new.id
+            assert robot2 == robot2_new
             print(grid)
+
+    def test_move_far_scenario(self):
+        base_grid = BaseGrid(5, 5)
+        goal_building = GoalBuilding(
+            """
+            0 0 0 0 0
+            0 0 1 0 0
+            0 1 2 1 0
+            0 0 1 2 0
+            0 0 0 0 0
+            """
+        )
+        # rotate, move, end coordinates:
+        # if move or rotate is None then don't do it
+        robot_states = [(Direction.UP, None, Coordinates(0, 0)),
+                        (None, Direction.UP, Coordinates(0, 1)),
+                        (Direction.DOWN, Direction.UP, Coordinates(0, 2)),
+                        (Direction.RIGHT, Direction.RIGHT, Coordinates(1, 2)),
+                        (None, Direction.RIGHT, Coordinates(2, 2)),
+                        (None, Direction.LEFT, Coordinates(1, 2))
+                        ]
+        rotate_directions = [state[0] for state in robot_states]
+        moving_directions = [state[1] for state in robot_states]
+        robot_coordinates = [state[2] for state in robot_states]
+
+        robot = Robot(rotate_directions[0])
+        base_grid.add_tile_to_grid(robot, robot_coordinates[0])
+
+        shared_grid_access = SharedGridAccess(base_grid, Manager())
+
+        for i in range(1, len(robot_states)):
+            rotate = rotate_directions[i]
+            move = moving_directions[i]
+
+            robot_executor = RobotRotateMoveMockExecutor(rotate, move, robot, shared_grid_access, goal_building)
+            robot_executor.start_working()
+            robot_executor.wait_for_finish()
+            if rotate is not None:
+                robot.rotate_to_direction(rotate)
+            with shared_grid_access.grid_lock_sync as grid:
+                robot_grid = grid.get_tile_from_grid(robot_coordinates[i])
+                assert robot_grid == robot
