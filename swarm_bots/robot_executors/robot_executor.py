@@ -31,7 +31,7 @@ class RobotExecutor(metaclass=abc.ABCMeta):
     def try_rotate_robot(self, direction: Direction) -> HitInformation:
         hit_information = self.shared_grid_access.try_rotate_robot(self.robot, direction)
         RobotExecutor._hit_error_validator(hit_information)
-        if hit_information.hit_type == HitType.NO_HIT:
+        if hit_information.hit_type == HitType.ROTATED:
             self.private_grid.update_tile(self.robot)
             self.robot = hit_information.updated_robot
         return hit_information

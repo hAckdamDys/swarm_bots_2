@@ -6,9 +6,10 @@ import numpy as np
 from swarm_bots.grid.add_duplicate_tile_error import AddDuplicateTileError
 from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
 from swarm_bots.grid.tile_already_added_exception import TileAlreadyAddedException
-from swarm_bots.grid.tile_exists_exception import TileTakenException
+from swarm_bots.grid.tile_not_source_error import TileNotSourceError
+from swarm_bots.grid.tile_taken_exception import TileTakenException
 from swarm_bots.grid.tile_not_exists_exception import TileNotExistsException
-from swarm_bots.tiles.tile import Tile
+from swarm_bots.tiles.tile import Tile, TileType
 from swarm_bots.utils.coordinates import Coordinates
 
 
@@ -34,9 +35,7 @@ class BaseGrid:
             tile_index = self.tile_grid[coordinates.get_array_index()]
         except IndexError as e:
             raise OutOfBoundCoordinatesError(e.args)
-        # tile = self.tiles_from_index.get(tile_index)
-        # print("tile on coord: ", coordinates, "was", tile)
-        return self.tiles_from_index.get(tile_index)
+        return self._get_tile_from_index(tile_index)
 
     def get_coord_from_tile(self, tile: Tile) -> Coordinates:
         coordinates = self.coordinates_from_index.get(tile.get_id())
@@ -91,6 +90,21 @@ class BaseGrid:
             return None
         self.coordinates_from_index.pop(tile_index)
         self.tile_grid[coordinates.get_array_index()] = BaseGrid.empty_tile_id
+        return self._get_tile_from_index(tile_index)
+
+    def get_tile_from_source(self, coordinates: Coordinates) -> Tile:
+        try:
+            tile_index = self.tile_grid[coordinates.get_array_index()]
+        except IndexError as e:
+            raise OutOfBoundCoordinatesError(e.args)
+        tile = self._get_tile_from_index(tile_index)
+        if tile is None:
+            raise TileNotExistsException("tile index: (" + str(tile_index) + ") did not have tile")
+        if tile.get_type() != TileType.SOURCE:
+            raise TileNotSourceError(tile, "tile: (" + str(tile) + ") is not source")
+        return Tile(TileType.BLOCK)
+
+    def _get_tile_from_index(self, tile_index: int) -> Tile:
         return self.tiles_from_index.get(tile_index)
 
     def __copy__(self):

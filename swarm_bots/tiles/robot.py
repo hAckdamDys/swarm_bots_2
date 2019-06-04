@@ -1,9 +1,11 @@
 import copy
 from typing import Union
 
+from swarm_bots.tiles.has_inner_block_error import HasInnerBlockError
 from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
 from swarm_bots.tiles.no_inner_block_error import NoInnerBlockError
 from swarm_bots.tiles.tile import Tile, TileType
+from swarm_bots.tiles.wrong_block_get_direction import WrongBlockGetDirection
 from swarm_bots.tiles.wrong_block_put_direction import WrongBlockPutDirection
 from swarm_bots.tiles.wrong_block_type_error import WrongBlockTypeError
 from swarm_bots.utils.direction import Direction
@@ -26,10 +28,18 @@ class Robot(Tile):
         if self.rotation != direction:
             raise WrongBlockPutDirection("cannot put block not in front")
 
+    def validate_get_block_direction(self, direction: Direction):
+        if self.inner_block is not None:
+            raise HasInnerBlockError("cannot get block if already has")
+        if self.rotation != direction:
+            raise WrongBlockGetDirection("cannot get block not in front")
+
     def rotate_to_direction(self, direction: Direction):
         self.rotation = direction
 
     def take_block(self, tile: Tile):
+        if self.inner_block is not None:
+            raise HasInnerBlockError("cannot get block if already has")
         if tile.get_type() != TileType.BLOCK:
             raise WrongBlockTypeError("robot can only take block type tiles")
         self.inner_block = tile

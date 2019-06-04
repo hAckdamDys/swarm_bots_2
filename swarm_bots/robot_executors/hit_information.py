@@ -9,8 +9,10 @@ class HitType(Enum):
     BLOCK = 1
     OBSTACLE = 2
     NO_HIT = 3
-    PLACED_BLOCK = 4
-    ERROR = 5
+    ROTATED = 4
+    PLACED_BLOCK = 5
+    GOT_BLOCK = 6
+    ERROR = 7
 
     @staticmethod
     def from_tile_type(tile_type: TileType) -> 'HitType':

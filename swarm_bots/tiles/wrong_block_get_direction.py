@@ -1,0 +1,2 @@
+class WrongBlockGetDirection(RuntimeError):
+    pass

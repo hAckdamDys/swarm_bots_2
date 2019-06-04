@@ -4,7 +4,7 @@ from unittest import TestCase
 from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
-from swarm_bots.grid.tile_exists_exception import TileTakenException
+from swarm_bots.grid.tile_taken_exception import TileTakenException
 from swarm_bots.robot_executors.hit_information import HitType
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.tiles.tile import Tile, TileType
@@ -69,7 +69,7 @@ class TestSharedGridAccess(TestCase):
         assert h_info.hit_type == HitType.ERROR
         assert isinstance(h_info.inner_error, WrongBlockPutDirection)
         h_info = shared_grid_access.try_rotate_robot(robot, Direction.LEFT)
-        assert h_info.hit_type == HitType.NO_HIT
+        assert h_info.hit_type == HitType.ROTATED
         robot.rotate_to_direction(Direction.LEFT)
         h_info = shared_grid_access.try_put_block(robot, Direction.LEFT)
         assert h_info.hit_type == HitType.PLACED_BLOCK
