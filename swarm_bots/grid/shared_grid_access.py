@@ -87,7 +87,7 @@ class SharedGridAccess:
                 return HitInformation(HitType.ERROR, e)
             robot.rotate_to_direction(direction)
             grid.update_tile(robot)
-            return HitInformation(HitType.NO_HIT)
+            return HitInformation(HitType.NO_HIT, updated_robot=robot)
 
     def try_move_robot(self, robot: Robot, direction: Direction) -> HitInformation:
         # we need to make copy to not mess with input robot
@@ -109,7 +109,7 @@ class SharedGridAccess:
                 return HitInformation(HitType.from_tile_type(tile.get_type()), e)
             except OutOfBoundCoordinatesError as e:
                 return HitInformation(HitType.ERROR, e)
-            return HitInformation(HitType.NO_HIT)
+            return HitInformation(HitType.NO_HIT, updated_robot=robot)
 
     # returns HitType.PLACED_BLOCK if placed block correctly
     def try_put_block(self, robot: Robot, direction: Direction) -> HitInformation:
@@ -133,4 +133,4 @@ class SharedGridAccess:
                 tile = e.get_tile()
                 return HitInformation(HitType.from_tile_type(tile.get_type()), e)
             grid.update_tile(robot)
-            return HitInformation(HitType.PLACED_BLOCK)
+            return HitInformation(HitType.PLACED_BLOCK, updated_robot=robot)

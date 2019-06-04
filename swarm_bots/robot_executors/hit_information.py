@@ -1,5 +1,6 @@
 from enum import Enum
 
+from swarm_bots.tiles.robot import Robot
 from swarm_bots.tiles.tile import TileType
 
 
@@ -23,7 +24,7 @@ class HitType(Enum):
 
 
 class HitInformation:
-    def __init__(self, hit_type: HitType, inner_error: RuntimeError = None):
+    def __init__(self, hit_type: HitType, inner_error: RuntimeError = None, updated_robot: Robot = None):
         self.inner_error = inner_error
         self.hit_type = hit_type
-        self.new_coordinates = None
+        self.updated_robot = updated_robot
