@@ -66,7 +66,7 @@ class RobotExecutorMockMove(RobotExecutor):
             
             if self.how_long_sleep == RobotExecutorMockMove.robot1_sleep:
                 robot1 = grid.get_tile_from_grid(self.r1_c)
-                assert robot1.id == self.robot.id
+                assert robot1 == self.robot
             if self.how_long_sleep == RobotExecutorMockMove.robot2_sleep:
                 robot1 = grid.get_tile_from_grid(self.r1_c)
                 assert robot1 is not None
@@ -74,7 +74,7 @@ class RobotExecutorMockMove(RobotExecutor):
                 assert robot1 is None
 
                 robot2 = grid.get_tile_from_grid(self.r2_c)
-                assert robot2.id == self.robot.id
+                assert robot2 == self.robot
                 robot2 = grid.get_tile_from_grid(RobotExecutorMockMove.robot2_coordinates)
                 assert robot2 is None
 
