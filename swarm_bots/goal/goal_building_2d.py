@@ -4,20 +4,17 @@ import os
 
 # static grid where there are only goal
 from swarm_bots.goal.goal_building import GoalBuilding
+from swarm_bots.grid.base_grid import BaseGrid
 
 
 class GoalBuilding2D(GoalBuilding):
     def parse_text_grid(self, text_grid: str):
-        row_sep = ';'
-        text_grid_tmp = text_grid.replace(os.linesep, row_sep)
-        text_grid_tmp = text_grid_tmp.replace('\n', row_sep)
-        text_grid_tmp = text_grid_tmp.lstrip(row_sep).rstrip(row_sep)
-        self.height = text_grid_tmp.count(row_sep)
-        first_row = np.fromstring(text_grid_tmp.split(row_sep)[0], dtype=int,
-                                  sep=' ')
-        self.width = first_row.shape[0]
-        self.grid = np.fromstring(text_grid, dtype=bool, sep=' ').reshape(
-            self.height, self.width)
+        self.dtype = bool
+        super().parse_text_grid(text_grid)
+
+    def validate_grid(self, base_grid: BaseGrid):
+        base_block_grid = base_grid.get_block_grid()
+        return np.array_equal(base_block_grid, self.grid)
 
 
 if __name__ == '__main__':

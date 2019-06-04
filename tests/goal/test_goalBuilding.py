@@ -8,18 +8,18 @@ class TestGoalBuilding(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
-        self.textGrid = """
+        self.text_grid = """
         0 0 0 0 0 0 0
         0 0 0 1 0 0 0
         0 0 1 2 1 0 0
         0 1 2 3 2 1 0
         0 0 1 2 1 0 0
-        0 0 0 1 0 0 0
+        0 1 0 1 0 0 0
         0 0 0 0 0 0 0
         """
-        self.resultGrid = np.array([
+        self.result_grid = np.array([
             [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0],
             [0, 0, 1, 2, 1, 0, 0],
             [0, 1, 2, 3, 2, 1, 0],
             [0, 0, 1, 2, 1, 0, 0],
@@ -28,13 +28,13 @@ class TestGoalBuilding(unittest.TestCase):
         ])
 
     def test_goalBuildingInitialization(self):
-        text_grid = self.textGrid
+        text_grid = self.text_grid
         goal_building = GoalBuilding(text_grid)
         assert goal_building
 
     def test_simple_grid(self):
-        text_grid = self.textGrid
-        result_grid = self.resultGrid
+        text_grid = self.text_grid
+        result_grid = self.result_grid
         goal_building = GoalBuilding(text_grid)
         assert goal_building
         assert np.array_equal(goal_building.grid, result_grid)
@@ -42,7 +42,7 @@ class TestGoalBuilding(unittest.TestCase):
     def test_wrong_grid(self):
         text_grid = """
         0 0 0 0 0 0 0
-        0 0 0 1 0 0 0
+        0 0 0 1 0 1 0
         0 0 1 2 1 0 0
         0 1 2 3 2 1 0
         0 0 1 2 1 0 0

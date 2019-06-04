@@ -24,6 +24,8 @@ class BaseGrid:
         self.tile_grid = np.zeros((self.width, self.height), np.longlong)
         self.tiles_from_index: Dict[int, Tile] = dict()
         self.coordinates_from_index: Dict[int, Coordinates] = dict()
+        # block tile grid for checking goal building
+        self.block_tile_grid = np.zeros((self.width, self.height), bool)
 
     def add_new_tile(self, tile: Tile):
         if self.tiles_from_index.get(tile.get_id()) is not None:
@@ -56,6 +58,8 @@ class BaseGrid:
             raise TileTakenException(tile_on_coordinates, f"there is already tile: ({str(tile)}) on {str(coordinates)}")
         self.tile_grid[coordinates.get_array_index()] = tile.get_id()
         self.coordinates_from_index[tile.get_id()] = coordinates
+        if tile.get_type() == TileType.BLOCK:
+            self.block_tile_grid[coordinates.get_array_index()] = True
 
     def update_tile(self, tile: Tile):
         self.tiles_from_index[tile.get_id()] = tile
@@ -76,13 +80,12 @@ class BaseGrid:
         self.tile_grid[previous_coordinates.get_array_index()] = BaseGrid.empty_tile_id
         self.tile_grid[coordinates.get_array_index()] = tile.get_id()
         self.tiles_from_index[tile.get_id()] = tile
+        if tile.get_type() == TileType.BLOCK:
+            self.block_tile_grid[previous_coordinates.get_array_index()] = False
+            self.block_tile_grid[coordinates.get_array_index()] = True
 
     def remove_tile_from_grid(self, coordinates: Coordinates):
-        tile_index = self.tile_grid[coordinates.get_array_index()]
-        if tile_index is None:
-            return
-        self.coordinates_from_index.pop(tile_index)
-        self.tile_grid[coordinates.get_array_index()] = BaseGrid.empty_tile_id
+        self.pop_tile_from_grid(coordinates)
 
     def pop_tile_from_grid(self, coordinates: Coordinates) -> Union[Tile, None]:
         tile_index = self.tile_grid[coordinates.get_array_index()]
@@ -90,7 +93,10 @@ class BaseGrid:
             return None
         self.coordinates_from_index.pop(tile_index)
         self.tile_grid[coordinates.get_array_index()] = BaseGrid.empty_tile_id
-        return self._get_tile_from_index(tile_index)
+        tile = self._get_tile_from_index(tile_index)
+        if tile.get_type() == TileType.BLOCK:
+            self.block_tile_grid[coordinates.get_array_index()] = False
+        return tile
 
     def get_tile_from_source(self, coordinates: Coordinates) -> Tile:
         try:
@@ -103,6 +109,9 @@ class BaseGrid:
         if tile.get_type() != TileType.SOURCE:
             raise TileNotSourceError(tile, "tile: (" + str(tile) + ") is not source")
         return Tile(TileType.BLOCK)
+
+    def get_block_grid(self):
+        return self.block_tile_grid
 
     def _get_tile_from_index(self, tile_index: int) -> Tile:
         return self.tiles_from_index.get(tile_index)
