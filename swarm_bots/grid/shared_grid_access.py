@@ -134,3 +134,7 @@ class SharedGridAccess:
                 return HitInformation(HitType.from_tile_type(tile.get_type()), e)
             grid.update_tile(robot)
             return HitInformation(HitType.PLACED_BLOCK, updated_robot=robot)
+
+    def try_get_block(self, robot: Robot, direction: Direction):
+        # TODO: implement
+        raise NotImplementedError()
