@@ -51,6 +51,11 @@ class Robot(Tile):
         self.inner_block = None
         return block
 
+    def has_block(self) -> bool:
+        if self.inner_block is None:
+            return False
+        return True
+
     def __eq__(self, other) -> bool:
         if not isinstance(other, Robot):
             return NotImplemented
