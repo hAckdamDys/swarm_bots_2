@@ -1,98 +1,12 @@
 from typing import List
 
 from swarm_bots.goal.goal_building import GoalBuilding
-from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.robot_executor import RobotExecutor
+from swarm_bots.robot_executors.spiral.grid_edge import GridEdge
+from swarm_bots.robot_executors.spiral.highway_executor import HighwayExecutor
+from swarm_bots.robot_executors.spiral.line_scanner_executor import LineScannerExecutor
 from swarm_bots.tiles.robot import Robot
-from swarm_bots.utils.coordinates import Coordinates
-from swarm_bots.utils.direction import Direction
-
-
-class LineToMiddle:
-    def __init__(self, start_coordinates: Coordinates, direction: Direction, length: int, block_positions: List[int]):
-        self.length = length
-        self.block_positions = block_positions
-        self.direction = direction
-        self.start_coordinates = start_coordinates
-        self.block_placed = 0
-        # TODO: validate if finished?
-        self.finished = False
-
-    # TODO: implement line structure and methods for scanner executor
-    def get_offset(self) -> int:
-        raise NotImplementedError()
-
-    def is_finished(self) -> bool:
-        return self.finished
-
-
-class SourcePosition:
-    def __init__(self, coordinates: Coordinates):
-        self.coordinates = coordinates
-
-
-class GridEdge:
-    def __init__(self, robot_coordinates: Coordinates, source_positions: List[SourcePosition]):
-        self.robot_coordinates = robot_coordinates
-        self.source_positions = source_positions
-        # TODO: validate if finished?
-        self.finished = False
-
-    def get_closest_source(self) -> SourcePosition:
-        raise NotImplementedError()
-
-    # get line that robot with given offset should start on this edge
-    def get_line(self, offset: int) -> LineToMiddle:
-        raise NotImplementedError()
-
-    def get_next_line(self) -> LineToMiddle:
-
-        raise NotImplementedError()
-
-    def is_finished(self) -> bool:
-        return self.finished
-
-    # TODO: decide if this method is needed or can be done other way to decide if edge is finished
-    def set_line_finished(self, line: LineToMiddle):
-        raise NotImplementedError()
-
-
-class LineScannerExecutor:
-    def __init__(self,
-                 robot: Robot,
-                 robot_coordinates: Coordinates,
-                 private_grid: BaseGrid,
-                 shared_grid_access: SharedGridAccess):
-        self.shared_grid_access = shared_grid_access
-        self.private_grid = private_grid
-        self.robot_coordinates = robot_coordinates
-        self.robot = robot
-        # TODO: implement line scanner logic
-
-    # scan line while changing line and all inner variables
-    def scan_line(self, line: LineToMiddle):
-        raise NotImplementedError()
-
-
-class HighwayExecutor:
-    def __init__(self,
-                 robot: Robot,
-                 robot_coordinates: Coordinates,
-                 private_grid: BaseGrid,
-                 shared_grid_access: SharedGridAccess):
-        self.shared_grid_access = shared_grid_access
-        self.private_grid = private_grid
-        self.robot_coordinates = robot_coordinates
-        self.robot = robot
-        # TODO: implement highway around grid and logic how to get into places
-
-    # makes robot go to line start using highway
-    def go_to_line_start(self, line: LineToMiddle):
-        raise NotImplementedError()
-
-    def go_get_source(self, source: SourcePosition):
-        raise NotImplementedError()
 
 
 class SpiralRobotExecutor(RobotExecutor):
