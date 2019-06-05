@@ -69,6 +69,20 @@ class RobotExecutor(metaclass=abc.ABCMeta):
                 Tile(TileType.OBSTACLE), self._get_robot_neighbour_coordinates(direction))
         return hit_information
 
+    def try_get_block(self, direction: Direction) -> HitInformation:
+        hit_information = self.shared_grid_access.try_get_block(self.robot, direction)
+        RobotExecutor._hit_error_validator(hit_information)
+        if hit_information.hit_type == HitType.GOT_BLOCK:
+            self.robot.take_block(Tile(TileType.BLOCK))
+            # no need to update robot we already popped block
+        elif hit_information.hit_type == HitType.BLOCK:
+            self.private_grid.add_tile_to_grid(
+                Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))
+        elif hit_information.hit_type == HitType.OBSTACLE:
+            self.private_grid.add_tile_to_grid(
+                Tile(TileType.OBSTACLE), self._get_robot_neighbour_coordinates(direction))
+        return hit_information
+
     def wait_for_finish(self):
         self.process.join()
 
