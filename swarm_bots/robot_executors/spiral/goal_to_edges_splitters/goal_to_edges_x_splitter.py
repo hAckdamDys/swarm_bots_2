@@ -25,20 +25,25 @@ class GoalToEdgesXSplitter(GoalToEdgesSplitter):
         height = self.goal_building.height
         # first add elements that are not on diagonals
         test_array = np.zeros((width, height), dtype=int)
+        counts = np.zeros(4, dtype=int)
         for x in range(width):
             for y in range(height):
                 # if self
-                if (y <= abs(height - np.ceil(x * height / width)) - 1) and (y <= abs(np.ceil(x * height / width)) - 1):
-                    test_array[(x, y)] = 1
+                if (y <= abs(height - (x * height / width))) and (y <= abs((x * height / width))):
+                    test_array[(x, y)] += 1
+                    counts[0] += 1
                     # left triangle
-                if (y >= abs(np.ceil(x * height / width)) + 1) and (y >= abs(height - np.ceil(x*height/width)) + 1):
-                    test_array[(x, y)] = 2
+                if (y >= abs((x * height / width))) and (y >= abs(height - (x * height / width))):
+                    test_array[(x, y)] += 10
+                    counts[1] += 1
                     # right triangle
-                if (y <= abs(height - np.ceil(x * height / width)) - 1) and (y >= abs(np.ceil(x * height / width)) + 1):
-                    test_array[(x, y)] = 3
+                if (y <= abs(height - (x * height / width))) and (y >= abs((x * height / width))):
+                    test_array[(x, y)] += 100
+                    counts[2] += 1
                     # up triangle
-                if (y >= abs(height - np.ceil(x * height / width)) + 1) and (y <= abs(np.ceil(x * height / width)) - 1):
-                    test_array[(x, y)] = 4
+                if (y >= abs(height - (x * height / width))) and (y <= abs((x * height / width))):
+                    test_array[(x, y)] += 1000
+                    counts[3] += 1
                     # down triangle
                 # if y >= abs(height-np.floor(x*height/width))-1:
                 #     test_array[(x, y)] += 10
@@ -46,13 +51,15 @@ class GoalToEdgesXSplitter(GoalToEdgesSplitter):
                 #     test_array[(x, y)] += 100
                 # if -y >= height-abs(np.floor(x*height/width))-1:
                 #     test_array[(x, y)] += 1000
-        print(test_array)
+        # TODO: delete later
+        test_array = np.flip(test_array, 0)
+        print(test_array, counts)
 
 
 class GoalBuildingMock(GoalBuilding):
     def __init__(self):
-        self.width = 19
-        self.height = 13
+        self.width = 13
+        self.height = 19
 
     def validate_grid(self, base_grid: BaseGrid):
         pass
