@@ -72,10 +72,16 @@ class GoalToEdgesXSplitter(GoalToEdgesSplitter):
                                                  y_direction=Direction.UP, pos=raising_diag_right_pos,
                                                  width=width, height=height)
         top_right_corner_walker.update_diag_to_corner()
+        down_right_corner_walker = ToCornerWalker(decreasing_diag_grid, x_direction=Direction.RIGHT,
+                                                  y_direction=Direction.DOWN, pos=decreasing_diag_right_pos,
+                                                  width=width, height=height)
+        down_right_corner_walker.update_diag_to_corner()
 
         # TODO: delete later this is just for debug:
-        diags = np.flip(raising_diag_grid + 2 * decreasing_diag_grid, 0)
-        print("a")
+        # diags = np.flip(raising_diag_grid + 2 * decreasing_diag_grid, 0)
+        diags = (raising_diag_grid + 2 * decreasing_diag_grid).T
+        diags = np.flip(diags, 0)
+        print(diags, "a")
 
 
 class ToCornerWalker:
@@ -87,18 +93,21 @@ class ToCornerWalker:
         self.diag_grid = diag_grid
         self.x_direction = x_direction
         self.y_direction = y_direction
-        # *2 -1 cause we change bool into True=1 False=-1
-        self.last_x_pos = (self.x_direction.is_x_or_y_rising() * 2 - 1) * (self.width - 1)
-        self.last_y_pos = (self.y_direction.is_x_or_y_rising() * 2 - 1) * (self.height - 1)
+        self.last_x_pos = self.x_direction.is_x_or_y_rising() * (self.width - 1)
+        self.last_y_pos = self.y_direction.is_x_or_y_rising() * (self.height - 1)
         self.last_pos = Coordinates(self.last_x_pos, self.last_y_pos)
         self.was_last_x = False
         self.was_last_y = False
 
     def _get_x_progress(self):
-        return 1000 * (self.pos.x + 1) // self.width
+        if self.x_direction == Direction.RIGHT:
+            return (1000 * self.pos.x + 1) // self.width
+        return 1000 - ((1000 * self.pos.x + 1) // self.width)
 
     def _get_y_progress(self):
-        return 1000 * (self.pos.y + 1) // self.height
+        if self.y_direction == Direction.UP:
+            return (1000 * self.pos.y + 1) // self.height
+        return 1000 - ((1000 * self.pos.y + 1) // self.height)
 
     def _make_x_progress(self):
         if self.pos.x == self.last_x_pos:
@@ -125,6 +134,7 @@ class ToCornerWalker:
     def update_diag_to_corner(self):
         while True:
             diag_2 = self.diag_grid.copy()
+            diag_2 = diag_2.T
             diag_2 = np.flip(diag_2, 0)
             if self.pos.x == self.last_x_pos:
                 if self.pos.y == self.last_y_pos:
