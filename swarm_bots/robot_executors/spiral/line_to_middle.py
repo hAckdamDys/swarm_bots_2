@@ -19,8 +19,8 @@ class LineToMiddle:
             position += 1
         return block_positions
 
-    def __init__(self, start_coordinates: Coordinates, direction: Direction, length: int, block_positions: List[int]):
-        self.length = length
+    def __init__(self, start_coordinates: Coordinates, direction: Direction, block_line: Iterable[bool]):
+        block_positions = LineToMiddle.get_block_positions_from_block_line(block_line)
         self.block_positions = block_positions
         self.direction = direction
         self.start_coordinates = start_coordinates

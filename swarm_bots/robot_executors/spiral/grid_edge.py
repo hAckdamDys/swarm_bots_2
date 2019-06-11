@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
 from swarm_bots.robot_executors.spiral.source_position import SourcePosition
@@ -6,7 +6,10 @@ from swarm_bots.utils.coordinates import Coordinates
 
 
 class GridEdge:
-    def __init__(self, robot_coordinates: Coordinates, source_positions: List[SourcePosition]):
+    def __init__(self, robot_coordinates: Coordinates, source_positions: List[SourcePosition], length: int,
+                 lines: List[LineToMiddle]):
+        self.length = length
+        self.lines = lines
         self.robot_coordinates = robot_coordinates
         self.source_positions = source_positions
         # TODO: validate if finished?
