@@ -133,9 +133,9 @@ class ToCornerWalker:
 
     def update_diag_to_corner(self):
         while True:
-            diag_2 = self.diag_grid.copy()
-            diag_2 = diag_2.T
-            diag_2 = np.flip(diag_2, 0)
+            # diag_2 = self.diag_grid.copy()
+            # diag_2 = diag_2.T
+            # diag_2 = np.flip(diag_2, 0)
             if self.pos.x == self.last_x_pos:
                 if self.pos.y == self.last_y_pos:
                     break
@@ -153,7 +153,11 @@ class ToCornerWalker:
                     self._make_x_progress()
                 else:
                     self._make_y_progress()
-            elif x_progress > y_progress:
+            # different approach
+            # real_x = (-self.width//2+self.pos.x) * (self.x_direction.is_x_or_y_rising()*2-1)
+            # real_y = (-self.height//2+self.pos.y) * (self.y_direction.is_x_or_y_rising()*2-1)
+            # if real_y < self.height*real_x/self.width:
+            if x_progress > y_progress:
                 self._make_y_progress()
             else:
                 self._make_x_progress()
@@ -161,8 +165,8 @@ class ToCornerWalker:
 
 class GoalBuildingMock(GoalBuilding):
     def __init__(self):
-        self.width = 12
-        self.height = 19
+        self.width = 11
+        self.height = 9
 
     def validate_grid(self, base_grid: BaseGrid):
         pass
