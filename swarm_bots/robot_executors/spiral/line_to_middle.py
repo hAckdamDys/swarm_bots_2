@@ -17,7 +17,8 @@ class LineToMiddle:
             if block:
                 block_positions.append(position)
             position += 1
-        return block_positions
+        # we reverse positions 5,3,1 -> 1,3,5 cause we add further blocks first
+        return block_positions[::-1]
 
     def __init__(self, start_coordinates: Coordinates, direction: Direction, block_line: Iterable[bool]):
         block_positions = LineToMiddle.get_block_positions_from_block_line(block_line)
