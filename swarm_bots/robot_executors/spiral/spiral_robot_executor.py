@@ -57,10 +57,8 @@ class SpiralRobotExecutor(RobotExecutor):
             offset = line.get_offset()
             self.highway_executor.go_to_line_start(line)
             self.line_scanner_executor.scan_line(line)
-            # TODO: check if needed {
             if line.is_finished():
                 self.edge.set_line_finished(line)
-            # }
             if not self.edge.is_finished():
                 if self.robot.has_block():
                     line = self.edge.get_next_line()

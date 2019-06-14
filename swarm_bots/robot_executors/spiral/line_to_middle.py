@@ -28,14 +28,20 @@ class LineToMiddle:
         self.blocks_placed = 0
         self.blocks_to_place = len(block_positions)
 
+    def get_to_block_direction(self) -> Direction:
+        return self.direction
+
+    def get_from_block_direction(self) -> Direction:
+        return self.direction.get_opposite()
+
     def get_next_block_position(self) -> Coordinates:
         return self.start_coordinates.create_moved_coordinate(self.direction, self.block_positions[0])
 
-    def place_block(self):
+    def place_block(self) -> Coordinates:
         if self.is_finished():
             raise ValueError("cannot place block when line finished")
         self.blocks_placed += 1
-        return self.block_positions.pop(0)
+        return self.start_coordinates.create_moved_coordinate(self.get_to_block_direction(),self.block_positions.pop(0))
 
     # TODO: implement
     def get_offset(self) -> int:

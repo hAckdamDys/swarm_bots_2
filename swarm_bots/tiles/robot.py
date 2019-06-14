@@ -17,6 +17,11 @@ class Robot(Tile):
         self.rotation = rotation
         self.inner_block: Union[Tile, None] = None
 
+    def update_from_robot(self, robot: 'Robot'):
+        super().__init__(robot.tile_type)
+        self.rotation = robot.rotation
+        self.inner_block = robot.inner_block
+
     def validate_movement_direction(self, direction: Direction):
         # robot can move forward or backwards so needs same axis
         if self.rotation.is_x_axis() != direction.is_x_axis():
@@ -55,6 +60,8 @@ class Robot(Tile):
         if self.inner_block is None:
             return False
         return True
+
+
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Robot):
