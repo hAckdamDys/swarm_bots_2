@@ -152,10 +152,10 @@ class GoalToEdgesXSplitter(GoalToEdgesSplitter):
             edge = GridEdge(self.robot_coordinates, self.source_positions, edge_build.length, lines)
             self.edges.append(edge)
 
-        # TODO: delete later this is just for debug:
-        diags = (raising_diag_grid + 2 * decreasing_diag_grid).T
-        diags = np.flip(diags, 0)
-        print(diags, "a")
+        # # TODO: delete later this is just for debug:
+        # diags = (raising_diag_grid + 2 * decreasing_diag_grid).T
+        # diags = np.flip(diags, 0)
+        # print(diags, "a")
 
 
 class EdgeBuild:

@@ -12,17 +12,16 @@ class TestGoalBuilding2D(unittest.TestCase):
 
     def setUp(self):
         self.text_grid = """
-        0 0 0 0
-        0 0 1 0
-        0 1 0 0
-        0 0 0 0
+        0 0 0 0 0
+        0 0 1 0 0
+        0 1 0 1 0
+        0 0 0 0 1
         """
-        self.result_grid = np.array([
-            [False, False, False, False],
-            [False, True,  False, False],
-            [False, False,  True, False],
-            [False, False, False, False]
-        ])
+        self.result_grid = np.zeros((5, 4), dtype=bool)
+        self.result_grid[1, 1] = True
+        self.result_grid[2, 2] = True
+        self.result_grid[3, 1] = True
+        self.result_grid[4, 0] = True
 
     def test_goalBuildingInitialization(self):
         text_grid = self.text_grid
@@ -37,9 +36,11 @@ class TestGoalBuilding2D(unittest.TestCase):
         assert np.array_equal(goal_building.grid, result_grid)
 
     def test_validate(self):
-        base_grid = BaseGrid(4, 4)
+        base_grid = BaseGrid(5, 4)
         base_grid.add_tile_to_grid(Tile(TileType.BLOCK), Coordinates(1, 1))
         base_grid.add_tile_to_grid(Tile(TileType.BLOCK), Coordinates(2, 2))
+        base_grid.add_tile_to_grid(Tile(TileType.BLOCK), Coordinates(3, 1))
+        base_grid.add_tile_to_grid(Tile(TileType.BLOCK), Coordinates(4, 0))
         goal_building = GoalBuilding2D(self.text_grid)
         assert goal_building.validate_grid(base_grid)
         base_grid.add_tile_to_grid(Tile(TileType.BLOCK), Coordinates(3, 3))

@@ -26,7 +26,8 @@ class GoalBuilding:
         self.grid = np.fromstring(text_grid, dtype=self.dtype, sep=' ').reshape(
             self.height, self.width)
         # we want bottom left to be 0,0
-        self.grid = np.flip(self.grid, 0)
+        self.grid = self.grid.T
+        self.grid = np.flip(self.grid, 1)
 
     def validate_grid(self, base_grid: BaseGrid):
         # TODO: implement when 3d coordinates will exist
