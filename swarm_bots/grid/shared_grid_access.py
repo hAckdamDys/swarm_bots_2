@@ -147,4 +147,5 @@ class SharedGridAccess:
             except (OutOfBoundCoordinatesError, TileNotExistsException, TileNotSourceError,
                     WrongTileError, HasInnerBlockError, WrongBlockGetDirection) as e:
                 return HitInformation(HitType.ERROR, e)
+            grid.update_tile(robot)
             return HitInformation(HitType.GOT_BLOCK, updated_robot=robot)
