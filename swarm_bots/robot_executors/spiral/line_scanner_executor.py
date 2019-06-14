@@ -100,6 +100,7 @@ class LineScannerExecutor:
             self.shared_actions_executor.try_rotate_robot(to_block_direction)
         # if we are just before position to put block and correctly rotated
         hit_information = self.shared_actions_executor.try_put_block(to_block_direction)
+        line.place_block()
         if hit_information.hit_type == HitType.PLACED_BLOCK:
             self._go_back_to_start_line(from_block_direction, line_start_coordinates)
         elif hit_information.hit_type == HitType.BLOCK:
