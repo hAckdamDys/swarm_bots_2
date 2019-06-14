@@ -21,10 +21,10 @@ class RobotRotateMoveMockExecutor(RobotExecutor):
 
     def start_process(self):
         if self.rotate is not None:
-            h_info = self.try_rotate_robot(self.rotate)
+            h_info = self.shared_actions_executor.try_rotate_robot(self.rotate)
             assert h_info.hit_type == HitType.ROTATED
         if self.move is not None:
-            h_info = self.try_move_robot(self.move)
+            h_info = self.shared_actions_executor.try_move_robot(self.move)
             assert h_info.hit_type == HitType.NO_HIT
 
 
@@ -44,7 +44,7 @@ class RobotExecutorMockRotate(RobotExecutor):
 
     def start_process(self):
         sleep(self.how_long_sleep)
-        self.try_rotate_robot(self.where_rotate)
+        self.shared_actions_executor.try_rotate_robot(self.where_rotate)
         with self.shared_grid_access.grid_lock_sync as grid:
             if self.how_long_sleep == RobotExecutorMockRotate.robot1_sleep:
                 robot1 = grid.get_tile_from_grid(RobotExecutorMockRotate.robot1_coordinates)
@@ -78,7 +78,7 @@ class RobotExecutorMockMove(RobotExecutor):
 
     def start_process(self):
         sleep(self.how_long_sleep)
-        self.try_move_robot(self.move_direction)
+        self.shared_actions_executor.try_move_robot(self.move_direction)
         with self.shared_grid_access.grid_lock_sync as grid:
             
             if self.how_long_sleep == RobotExecutorMockMove.robot1_sleep:
@@ -233,6 +233,7 @@ class TestRobotExecutor(TestCase):
             robot_executor.wait_for_finish()
             if rotate is not None:
                 robot.rotate_to_direction(rotate)
-            with shared_grid_access.grid_lock_sync as grid:
-                robot_grid = grid.get_tile_from_grid(robot_coordinates[i])
-                assert robot_grid == robot
+            grid_copy = shared_grid_access.get_private_copy()
+            # robot from grid has wrong direction
+            robot_grid = grid_copy.get_tile_from_grid(robot_coordinates[i])
+            assert robot_grid == robot

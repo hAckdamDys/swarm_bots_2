@@ -30,5 +30,14 @@ class Coordinates:
     def move_to_neighbour(self, direction: Direction):
         self.move_coordinate(direction, 1)
 
+    def copy(self) -> 'Coordinates':
+        return self.__copy__()
+
+    def __copy__(self) -> 'Coordinates':
+        return Coordinates(x=self.x, y=self.y)
+
     def __str__(self):
         return "{x: "+str(self.x)+", y: "+str(self.y)+"}"
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y

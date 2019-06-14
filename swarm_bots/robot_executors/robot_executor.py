@@ -14,7 +14,13 @@ class RobotExecutor(metaclass=abc.ABCMeta):
         self.shared_grid_access = shared_grid_access
         self.private_grid = self.shared_grid_access.get_private_copy()
         self.process = Process(target=self.start_process)
-        self.shared_actions_executor = RobotSharedActionsExecutor(robot, shared_grid_access, goal_building)
+        self.robot_coordinates = self.private_grid.get_coord_from_tile(self.robot)
+        self.shared_actions_executor = RobotSharedActionsExecutor(
+            robot=robot,
+            shared_grid_access=shared_grid_access,
+            private_grid=self.private_grid,
+            robot_coordinates=self.robot_coordinates
+        )
 
     def start_working(self):
         self.process.start()

@@ -18,7 +18,6 @@ class Robot(Tile):
         self.inner_block: Union[Tile, None] = None
 
     def update_from_robot(self, robot: 'Robot'):
-        super().__init__(robot.tile_type)
         self.rotation = robot.rotation
         self.inner_block = robot.inner_block
 
@@ -60,8 +59,6 @@ class Robot(Tile):
         if self.inner_block is None:
             return False
         return True
-
-
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Robot):

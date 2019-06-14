@@ -1,6 +1,6 @@
 import time
 
-from swarm_bots.goal.goal_building import GoalBuilding
+from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.hit_information import HitInformation, HitType
 from swarm_bots.tiles.robot import Robot
@@ -15,12 +15,12 @@ class RobotSharedActionsExecutor:
     def __init__(self,
                  robot: Robot,
                  shared_grid_access: SharedGridAccess,
-                 goal_building: GoalBuilding):
+                 private_grid: BaseGrid,
+                 robot_coordinates: Coordinates):
+        self.robot_coordinates = robot_coordinates
         self.robot = robot
-        self.goal_building = goal_building
         self.shared_grid_access = shared_grid_access
-        self.private_grid = self.shared_grid_access.get_private_copy()
-        self.robot_coordinates = self.private_grid.get_coord_from_tile(self.robot)
+        self.private_grid = private_grid
 
     @staticmethod
     def _hit_error_validator(hit_information: HitInformation):
@@ -45,9 +45,9 @@ class RobotSharedActionsExecutor:
         hit_information = self.shared_grid_access.try_move_robot(self.robot, direction)
         RobotSharedActionsExecutor._hit_error_validator(hit_information)
         if hit_information.hit_type == HitType.NO_HIT:
-            self.private_grid.move_tile_on_grid(self.robot, self._get_robot_neighbour_coordinates(direction))
-            self.robot.update_from_robot(hit_information.updated_robot)
             self.robot_coordinates.move_to_neighbour(direction)
+            self.private_grid.move_tile_on_grid(self.robot, self.robot_coordinates)
+            self.robot.update_from_robot(hit_information.updated_robot)
         elif hit_information.hit_type == HitType.BLOCK:
             self.private_grid.add_tile_to_grid(
                 Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))
