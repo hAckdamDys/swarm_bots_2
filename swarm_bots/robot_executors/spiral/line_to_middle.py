@@ -1,3 +1,4 @@
+import copy
 from typing import List, Iterable
 
 from swarm_bots.utils.coordinates import Coordinates
@@ -21,12 +22,12 @@ class LineToMiddle:
         return block_positions[::-1]
 
     def __init__(self, start_coordinates: Coordinates, direction: Direction, block_line: Iterable[bool]):
-        block_positions = LineToMiddle.get_block_positions_from_block_line(block_line)
-        self.block_positions = block_positions
+        self.block_line = copy.deepcopy(block_line)
+        self.block_positions = LineToMiddle.get_block_positions_from_block_line(block_line)
         self.direction = direction
-        self.start_coordinates = start_coordinates
+        self.start_coordinates = start_coordinates.copy()
         self.blocks_placed = 0
-        self.blocks_to_place = len(block_positions)
+        self.blocks_to_place = len(self.block_positions)
 
     def get_to_block_direction(self) -> Direction:
         return self.direction
@@ -49,3 +50,10 @@ class LineToMiddle:
 
     def is_finished(self) -> bool:
         return self.blocks_placed == self.blocks_to_place
+
+    def __copy__(self):
+        return LineToMiddle(start_coordinates=self.start_coordinates.copy(), direction=self.direction,
+                            block_line=self.block_line)
+
+    def copy(self):
+        return self.__copy__()

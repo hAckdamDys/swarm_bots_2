@@ -6,6 +6,17 @@ class Coordinates:
         self.y = y
         self.x = x
 
+    def get_to_other_direction(self, to_coordinates: 'Coordinates') -> 'Direction':
+        if self.x != to_coordinates.x and self.y != to_coordinates.y:
+            raise ValueError("x or y coordinate must be same to get direction")
+        if self.x == to_coordinates.x:
+            if to_coordinates.y > self.y:
+                return Direction.UP
+            return Direction.DOWN
+        if to_coordinates.x > self.x:
+            return Direction.RIGHT
+        return Direction.LEFT
+
     def get_array_index(self):
         return self.x, self.y
 

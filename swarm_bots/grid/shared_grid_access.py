@@ -115,6 +115,7 @@ class SharedGridAccess:
             except OutOfBoundCoordinatesError as e:
                 return HitInformation(HitType.ERROR, e)
             # no need to update robot cause inner state is the same
+            print("robot: ", robot, "moved to ", new_coordinates)
             return HitInformation(HitType.NO_HIT, updated_robot=robot)
 
     # returns HitType.PLACED_BLOCK if placed block correctly
@@ -133,6 +134,7 @@ class SharedGridAccess:
                 tile = e.get_tile()
                 return HitInformation(HitType.from_tile_type(tile.get_type()), e)
             grid.update_tile(robot)
+            print("robot: ", robot, "placed to ", block_coordinates)
             return HitInformation(HitType.PLACED_BLOCK, updated_robot=robot)
 
     def try_get_block(self, robot: Robot, direction: Direction):

@@ -95,17 +95,24 @@ class LineScannerExecutor:
         if self.robot.rotation != to_block_direction:
             self.shared_actions_executor.try_rotate_robot(to_block_direction)
         self._move_to_block_towards_inside(to_block_direction, from_block_direction, line, before_block_coordinates)
-        # we need to rotate in case we were not
-        if self.robot.rotation != to_block_direction:
-            self.shared_actions_executor.try_rotate_robot(to_block_direction)
-        # if we are just before position to put block and correctly rotated
-        hit_information = self.shared_actions_executor.try_put_block(to_block_direction)
-        line.place_block()
-        if hit_information.hit_type == HitType.PLACED_BLOCK:
-            self._go_back_to_start_line(from_block_direction, line_start_coordinates)
-        elif hit_information.hit_type == HitType.BLOCK:
-            # when another robot already put this block
-            self._put_block_on_map(line)
-            self._go_back_to_start_line(from_block_direction, line_start_coordinates)
-        else:
-            raise ValueError("different tile type cannot be on position where block will be added")
+        while True:
+            # we need to rotate in case we were not
+            if self.robot.rotation != to_block_direction:
+                self.shared_actions_executor.try_rotate_robot(to_block_direction)
+            # if we are just before position to put block and correctly rotated
+            hit_information = self.shared_actions_executor.try_put_block(to_block_direction)
+            if hit_information.hit_type == HitType.PLACED_BLOCK:
+                line.place_block()
+                break
+            elif hit_information.hit_type == HitType.BLOCK:
+                # when another robot already put this block
+                line.place_block()
+                if line.is_finished():
+                    break
+                before_block_coordinates = line.get_next_block_position(). \
+                    create_neighbour_coordinate(from_block_direction)
+                self._move_to_block_from_inside(from_block_direction, before_block_coordinates)
+                continue
+            else:
+                raise ValueError("different tile type cannot be on position where block will be added")
+        self._go_back_to_start_line(from_block_direction, line_start_coordinates)
