@@ -67,8 +67,11 @@ class RobotSharedActionsExecutor:
             self.put_blocks += 1
             # no need to update robot we already popped block
         elif hit_information.hit_type == HitType.BLOCK:
-            self.private_grid.add_tile_to_grid(
-                Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))
+            try:
+                self.private_grid.add_tile_to_grid(
+                    Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))
+            except Exception as e:
+                print(f"WARNING {e}")
         elif hit_information.hit_type == HitType.OBSTACLE:
             self.private_grid.add_tile_to_grid(
                 Tile(TileType.OBSTACLE), self._get_robot_neighbour_coordinates(direction))
