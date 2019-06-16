@@ -53,7 +53,7 @@ class LineScannerWrapperExecutor(RobotExecutor):
 class LineScannerWithSourceWrapperExecutor(RobotExecutor):
     def __init__(self, line: LineToMiddle, robot: Robot, shared_grid_access: SharedGridAccess,
                  goal_building: GoalBuilding):
-        super().__init__(robot, shared_grid_access, goal_building, sleep_tick_seconds=0.001)
+        super().__init__(robot, shared_grid_access, goal_building, 0.001)
         self.line = line.copy()
         self.line_scanner = LineScannerExecutor(self.shared_actions_executor)
 
@@ -212,7 +212,7 @@ class TestLineScannerExecutor(TestCase):
         0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-        0 0 1 0 0 1 0 0 0 1 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 1 1
+        0 0 1 0 0 1 0 0 0 1 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 1 1
         0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -220,16 +220,16 @@ class TestLineScannerExecutor(TestCase):
         goal_building = GoalBuilding2D(text_grid=text_grid)
         robot_1 = Robot(Direction.DOWN)
         robot_1_source = Tile(TileType.SOURCE)
-        robot_2 = Robot(Direction.UP)
-        robot_2_source = Tile(TileType.SOURCE)
+        # robot_2 = Robot(Direction.UP)
+        # robot_2_source = Tile(TileType.SOURCE)
         line_start_coordinates = Coordinates(0, 3)
         base_grid = BaseGrid(goal_building.width, goal_building.height)
         robot_1_coordinates = Coordinates(0, 4)
         base_grid.add_tile_to_grid(robot_1, robot_1_coordinates)
         base_grid.add_tile_to_grid(robot_1_source, robot_1_coordinates.create_neighbour_coordinate(Direction.UP))
-        robot_2_coordinates = Coordinates(0, 2)
-        base_grid.add_tile_to_grid(robot_2, robot_2_coordinates)
-        base_grid.add_tile_to_grid(robot_2_source, robot_2_coordinates.create_neighbour_coordinate(Direction.DOWN))
+        # robot_2_coordinates = Coordinates(0, 2)
+        # base_grid.add_tile_to_grid(robot_2, robot_2_coordinates)
+        # base_grid.add_tile_to_grid(robot_2_source, robot_2_coordinates.create_neighbour_coordinate(Direction.DOWN))
 
         shared_grid_access = SharedGridAccess(base_grid, manager=Manager())
         line_to_middle = LineToMiddle(
@@ -243,17 +243,17 @@ class TestLineScannerExecutor(TestCase):
             shared_grid_access=shared_grid_access,
             goal_building=goal_building
         )
-        robot_2_executor = LineScannerWithSourceWrapperExecutor(
-            line=line_to_middle,
-            robot=robot_2,
-            shared_grid_access=shared_grid_access,
-            goal_building=goal_building
-        )
+        # robot_2_executor = LineScannerWithSourceWrapperExecutor(
+        #     line=line_to_middle,
+        #     robot=robot_2,
+        #     shared_grid_access=shared_grid_access,
+        #     goal_building=goal_building
+        # )
         robot_1_executor.start_working()
-        robot_2_executor.start_working()
+        # robot_2_executor.start_working()
 
         robot_1_executor.wait_for_finish()
-        robot_2_executor.wait_for_finish()
+        # robot_2_executor.wait_for_finish()
 
         grid = shared_grid_access.get_private_copy()
         assert goal_building.validate_grid(grid)
