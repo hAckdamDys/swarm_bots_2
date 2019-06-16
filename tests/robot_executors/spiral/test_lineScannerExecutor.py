@@ -1,4 +1,4 @@
-from multiprocessing import Manager, Process
+from multiprocessing import Manager
 from unittest import TestCase
 
 from swarm_bots.goal.goal_building import GoalBuilding
@@ -52,7 +52,7 @@ class LineScannerWrapperExecutor(RobotExecutor):
 class LineScannerWithSourceWrapperExecutor(RobotExecutor):
     def __init__(self, line: LineToMiddle, robot: Robot, shared_grid_access: SharedGridAccess,
                  goal_building: GoalBuilding):
-        super().__init__(robot, shared_grid_access, goal_building, sleep_tick_seconds=0.1)
+        super().__init__(robot, shared_grid_access, goal_building, sleep_tick_seconds=0.01)
         self.line = line.copy()
         self.line_scanner = LineScannerExecutor(self.shared_actions_executor)
 
@@ -210,7 +210,7 @@ class TestLineScannerExecutor(TestCase):
         0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0
-        0 0 0 0 1 1 0 1 0 1 1
+        0 0 1 1 1 1 0 1 0 1 1
         0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0
         0 0 0 0 0 0 0 0 0 0 0
@@ -232,7 +232,7 @@ class TestLineScannerExecutor(TestCase):
         line_to_middle = LineToMiddle(
             start_coordinates=line_start_coordinates,
             direction=Direction.RIGHT,
-            block_line=list(map(bool, [0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1]))
+            block_line=list(map(bool, [0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1]))
         )
         robot_1_executor = LineScannerWithSourceWrapperExecutor(
             line=line_to_middle,
