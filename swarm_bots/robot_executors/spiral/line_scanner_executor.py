@@ -54,7 +54,7 @@ class LineScannerExecutor:
                                       to_block_direction: Direction,
                                       from_block_direction: Direction,
                                       line: LineToMiddle,
-                                      before_block_coordinates: Coordinates):
+                                      before_block_coordinates: Coordinates) -> bool:
         # returns True when finished but False when still need to add block
         while self.robot_coordinates != before_block_coordinates:
             hit_information = self.shared_actions_executor.try_move_robot(to_block_direction)
@@ -67,18 +67,18 @@ class LineScannerExecutor:
                     placed_block_position = self._put_block_on_map(line)
                 if line.is_finished():
                     self._go_back_to_start_line(from_block_direction, line.start_coordinates)
-                    return
+                    return False
                 self.shared_actions_executor.try_rotate_robot(from_block_direction)
                 before_block_coordinates = line.get_next_block_position(). \
                     create_neighbour_coordinate(from_block_direction)
                 self._move_to_block_from_inside(from_block_direction, before_block_coordinates)
-                return
+                return False
             elif hit_information.hit_type == HitType.ROBOT:
                 # if we hit robot then he already put at least one new block and we continue with block elsewhere
                 self._put_block_on_map(line)
                 self._go_back_to_start_line(from_block_direction, line.start_coordinates)
-                return
-        return
+                return True
+        return False
 
     # scan line while changing line and all inner variables
     def scan_line(self, line: LineToMiddle):
@@ -94,7 +94,8 @@ class LineScannerExecutor:
         before_block_coordinates = line.get_next_block_position().create_neighbour_coordinate(from_block_direction)
         if self.robot.rotation != to_block_direction:
             self.shared_actions_executor.try_rotate_robot(to_block_direction)
-        self._move_to_block_towards_inside(to_block_direction, from_block_direction, line, before_block_coordinates)
+        if self._move_to_block_towards_inside(to_block_direction, from_block_direction, line, before_block_coordinates):
+            return
         while True:
             # we need to rotate in case we were not
             if self.robot.rotation != to_block_direction:

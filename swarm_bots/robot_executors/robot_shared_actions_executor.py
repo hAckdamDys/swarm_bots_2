@@ -10,7 +10,7 @@ from swarm_bots.utils.direction import Direction
 
 
 class RobotSharedActionsExecutor:
-    wait_time_seconds = 1
+    _wait_time_ticks = 1
 
     def __init__(self,
                  robot: Robot,
@@ -30,6 +30,8 @@ class RobotSharedActionsExecutor:
             raise RuntimeError("robot action failed with unknown error")
 
     def try_rotate_robot(self, direction: Direction) -> HitInformation:
+        if self.robot.rotation == direction:
+            return HitInformation(HitType.ROTATED, updated_robot=self.robot)
         hit_information = self.shared_grid_access.try_rotate_robot(self.robot, direction)
         RobotSharedActionsExecutor._hit_error_validator(hit_information)
         if hit_information.hit_type == HitType.ROTATED:
@@ -86,4 +88,4 @@ class RobotSharedActionsExecutor:
     @staticmethod
     def wait_action():
         # TODO: maybe implement maximum tries after which raise error
-        time.sleep(RobotSharedActionsExecutor.wait_time_seconds)
+        time.sleep(RobotSharedActionsExecutor._wait_time_ticks)
