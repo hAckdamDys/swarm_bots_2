@@ -1,4 +1,5 @@
 import time
+from random import random
 
 from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
@@ -44,4 +45,4 @@ class RobotSharedActionsExecutorWithSleep(RobotSharedActionsExecutor):
         return hit_information
 
     def wait_action(self):
-        time.sleep(self._wait_time_ticks * self.sleep_tick_seconds)
+        time.sleep(self._wait_time_ticks * self.sleep_tick_seconds * (0.9 + random() / 5))

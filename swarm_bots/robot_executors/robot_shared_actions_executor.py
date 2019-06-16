@@ -17,6 +17,7 @@ class RobotSharedActionsExecutor:
                  shared_grid_access: SharedGridAccess,
                  private_grid: BaseGrid,
                  robot_coordinates: Coordinates):
+        self.put_blocks = 0
         self.robot_coordinates = robot_coordinates
         self.robot = robot
         self.shared_grid_access = shared_grid_access
@@ -63,6 +64,7 @@ class RobotSharedActionsExecutor:
         RobotSharedActionsExecutor._hit_error_validator(hit_information)
         if hit_information.hit_type == HitType.PLACED_BLOCK:
             self.private_grid.add_tile_to_grid(self.robot.pop_block(), self._get_robot_neighbour_coordinates(direction))
+            self.put_blocks += 1
             # no need to update robot we already popped block
         elif hit_information.hit_type == HitType.BLOCK:
             self.private_grid.add_tile_to_grid(
@@ -77,6 +79,11 @@ class RobotSharedActionsExecutor:
         RobotSharedActionsExecutor._hit_error_validator(hit_information)
         if hit_information.hit_type == HitType.GOT_BLOCK:
             self.robot.update_from_robot(hit_information.updated_robot)
+            block_coordinates = self.robot_coordinates.create_neighbour_coordinate(direction)
+            if self.private_grid.get_tile_from_grid(block_coordinates).get_type() != TileType.SOURCE:
+                self.private_grid.pop_tile_from_grid(block_coordinates)
+                # if robot took block then his total is -1
+                self.put_blocks -= 1
         elif hit_information.hit_type == HitType.BLOCK:
             self.private_grid.add_tile_to_grid(
                 Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))

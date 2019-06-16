@@ -12,6 +12,7 @@ from swarm_bots.tiles.has_inner_block_error import HasInnerBlockError
 from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
 from swarm_bots.tiles.no_inner_block_error import NoInnerBlockError
 from swarm_bots.tiles.robot import Robot
+from swarm_bots.tiles.tile import TileType
 from swarm_bots.tiles.wrong_block_get_direction import WrongBlockGetDirection
 from swarm_bots.tiles.wrong_block_put_direction import WrongBlockPutDirection
 from swarm_bots.utils.coordinates import Coordinates
@@ -144,7 +145,10 @@ class SharedGridAccess:
                 coordinates = SharedGridAccess._get_robot_coordinates(grid, robot)
                 source_coordinates = coordinates.create_neighbour_coordinate(direction)
                 robot.validate_get_block_direction(direction)
-                block = grid.get_tile_from_source(source_coordinates)
+                if grid.get_tile_from_grid(source_coordinates).get_type() == TileType.BLOCK:
+                    block = grid.pop_tile_from_grid(source_coordinates)
+                else:
+                    block = grid.get_tile_from_source(source_coordinates)
                 robot.take_block(block)
             except (OutOfBoundCoordinatesError, TileNotExistsException, TileNotSourceError,
                     WrongTileError, HasInnerBlockError, WrongBlockGetDirection) as e:
