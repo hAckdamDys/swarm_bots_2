@@ -2,19 +2,19 @@ from multiprocessing import Manager
 from threading import Lock
 
 from swarm_bots.grid.base_grid import BaseGrid
-from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
-from swarm_bots.grid.tile_not_exists_exception import TileNotExistsException
-from swarm_bots.grid.tile_not_source_error import TileNotSourceError
-from swarm_bots.grid.tile_taken_exception import TileTakenException
+from swarm_bots.grid.errors.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
+from swarm_bots.grid.errors.tile_not_exists_exception import TileNotExistsException
+from swarm_bots.grid.errors.tile_not_source_error import TileNotSourceError
+from swarm_bots.grid.errors.tile_taken_exception import TileTakenException
 from swarm_bots.robot_executors.hit_information import HitInformation, HitType
 from swarm_bots.robot_executors.wrong_tile_error import WrongTileError
-from swarm_bots.tiles.has_inner_block_error import HasInnerBlockError
-from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
-from swarm_bots.tiles.no_inner_block_error import NoInnerBlockError
+from swarm_bots.tiles.errors.has_inner_block_error import HasInnerBlockError
+from swarm_bots.tiles.errors.impossible_robot_movement_error import ImpossibleRobotMovementError
+from swarm_bots.tiles.errors.no_inner_block_error import NoInnerBlockError
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.tiles.tile import TileType
-from swarm_bots.tiles.wrong_block_get_direction import WrongBlockGetDirection
-from swarm_bots.tiles.wrong_block_put_direction import WrongBlockPutDirection
+from swarm_bots.tiles.errors.wrong_block_get_direction import WrongBlockGetDirection
+from swarm_bots.tiles.errors.wrong_block_put_direction import WrongBlockPutDirection
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.utils.direction import Direction
 
