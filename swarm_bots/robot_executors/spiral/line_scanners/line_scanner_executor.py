@@ -41,8 +41,8 @@ class LineScannerExecutor:
                                    from_block_direction: Direction,
                                    before_block_coordinates: Coordinates):
         print(f"robot: {self.robot}, move_to_block_from_inside {before_block_coordinates}")
-        hit_information = self.shared_actions_executor.try_move_robot(from_block_direction)
         while self.robot_coordinates != before_block_coordinates:
+            hit_information = self.shared_actions_executor.try_move_robot(from_block_direction)
             if hit_information.hit_type == HitType.OBSTACLE:
                 raise ValueError("scanner cannot work with obstacles")
             elif hit_information.hit_type == HitType.BLOCK:

@@ -1,7 +1,7 @@
 from typing import Union
 
 from swarm_bots.robot_executors.hit_information import HitType
-from swarm_bots.robot_executors.spiral.line_scanner_executor import LineScannerExecutor
+from swarm_bots.robot_executors.spiral.line_scanners.line_scanner_executor import LineScannerExecutor
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
 from swarm_bots.tiles.tile import TileType, Tile
 from swarm_bots.utils.coordinates import Coordinates

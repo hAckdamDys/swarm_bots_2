@@ -6,7 +6,7 @@ from swarm_bots.robot_executors.robot_executor import RobotExecutor
 from swarm_bots.robot_executors.spiral.goal_to_edges_splitters.goal_to_edges_splitter import GoalToEdgesSplitter
 from swarm_bots.robot_executors.spiral.grid_edge import GridEdge
 from swarm_bots.robot_executors.spiral.highway_executor import HighwayExecutor
-from swarm_bots.robot_executors.spiral.line_scanner_executor import LineScannerExecutor
+from swarm_bots.robot_executors.spiral.line_scanners.line_scanner_executor import LineScannerExecutor
 from swarm_bots.tiles.robot import Robot
 
 

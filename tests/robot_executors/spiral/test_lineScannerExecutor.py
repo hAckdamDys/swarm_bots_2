@@ -8,7 +8,7 @@ from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.hit_information import HitType
 from swarm_bots.robot_executors.robot_executor import RobotExecutor
 from swarm_bots.robot_executors.robot_shared_actions_executor import RobotSharedActionsExecutor
-from swarm_bots.robot_executors.spiral.line_scanner_executor import LineScannerExecutor
+from swarm_bots.robot_executors.spiral.line_scanners.line_scanner_executor import LineScannerExecutor
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.tiles.tile import Tile, TileType
