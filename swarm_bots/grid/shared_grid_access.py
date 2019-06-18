@@ -48,25 +48,10 @@ class SharedGridAccess:
 
     def __init__(self, grid: BaseGrid, manager: Manager):
         self.grid_lock_sync = GridLockSync(grid, manager)
-        # when simulation is not started we can add elements and do more
-        # self.simulation_started = False
 
     def get_private_copy(self):
         with self.grid_lock_sync as grid:
             return grid.copy()
-
-    # This should be done to BaseGrid added before access is even made
-    # def add_tile(self, tile: Tile, coordinates: Coordinates):
-    #     if self.simulation_started:
-    #         raise SimulationStartedError("cannot add tile when simulation started")
-    #     with self.lock:
-    #         self.grid.add_tile_to_grid(tile=tile, coordinates=coordinates)
-    #
-    # def remove_tile(self, coordinates: Coordinates):
-    #     if self.simulation_started:
-    #         raise SimulationStartedError("cannot add tile when simulation started")
-    #     with self.lock:
-    #         self.grid.remove_tile_from_grid(coordinates)
 
     @staticmethod
     def _get_robot_coordinates(grid: BaseGrid, robot: Robot) -> Coordinates:
