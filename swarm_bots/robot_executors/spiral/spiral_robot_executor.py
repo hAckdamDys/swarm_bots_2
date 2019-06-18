@@ -3,6 +3,7 @@ from typing import List
 from swarm_bots.goal.goal_building import GoalBuilding
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.robot_executor import RobotExecutor
+from swarm_bots.robot_executors.spiral.goal_to_edges_splitters.goal_to_edges_splitter import GoalToEdgesSplitter
 from swarm_bots.robot_executors.spiral.grid_edge import GridEdge
 from swarm_bots.robot_executors.spiral.highway_executor import HighwayExecutor
 from swarm_bots.robot_executors.spiral.line_scanner_executor import LineScannerExecutor
@@ -13,7 +14,11 @@ class SpiralRobotExecutor(RobotExecutor):
     # TODO: add timeout to init maybe
     loop_timeout = 1000
 
-    def __init__(self, robot: Robot, shared_grid_access: SharedGridAccess, goal_building: GoalBuilding,
+    def __init__(self,
+                 robot: Robot,
+                 shared_grid_access: SharedGridAccess,
+                 goal_building: GoalBuilding,
+                 goal_to_edges_splitter: GoalToEdgesSplitter,
                  start_offset: int = 0):
         super().__init__(robot, shared_grid_access, goal_building)
         self.start_offset = start_offset
@@ -24,22 +29,16 @@ class SpiralRobotExecutor(RobotExecutor):
             private_grid=self.private_grid,
             shared_grid_access=self.shared_grid_access
         )
-        self.edges: List[GridEdge] = self._cut_goal_to_edges()
+        self.edges: List[GridEdge] = goal_to_edges_splitter.get_edges()
         self.edge = self.edges[0]
         self.line_scanner_executor = LineScannerExecutor(
-            robot=self.robot,
-            robot_coordinates=self.robot_coordinates,
-            private_grid=self.private_grid,
-            shared_grid_access=self.shared_grid_access
+            shared_actions_executor=self.shared_actions_executor
         )
 
     def _set_finished_edge(self, edge: GridEdge):
         raise NotImplementedError()
 
     def _all_edges_finished(self) -> bool:
-        raise NotImplementedError()
-
-    def _cut_goal_to_edges(self) -> List[GridEdge]:
         raise NotImplementedError()
 
     def _setup_into_next_edge(self):

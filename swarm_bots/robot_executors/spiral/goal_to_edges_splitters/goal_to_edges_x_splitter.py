@@ -1,4 +1,4 @@
-from typing import List, Iterable
+from typing import List
 
 import numpy as np
 
@@ -252,6 +252,7 @@ class ToCornerWalker:
                 self._make_x_progress()
 
 
+# noinspection PyMissingConstructor
 class GoalBuildingMock(GoalBuilding):
     def __init__(self):
         self.width = 11
@@ -278,4 +279,5 @@ if __name__ == '__main__':
         """
     )
     splitter = GoalToEdgesXSplitter(building, Coordinates(1, 0))
+    # noinspection PyProtectedMember
     splitter._split_goal()

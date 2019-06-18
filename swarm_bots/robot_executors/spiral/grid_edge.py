@@ -1,4 +1,4 @@
-from typing import List, Iterable
+from typing import List
 
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
 from swarm_bots.robot_executors.spiral.source_position import SourcePosition
@@ -23,7 +23,6 @@ class GridEdge:
         raise NotImplementedError()
 
     def get_next_line(self) -> LineToMiddle:
-
         raise NotImplementedError()
 
     def is_finished(self) -> bool:

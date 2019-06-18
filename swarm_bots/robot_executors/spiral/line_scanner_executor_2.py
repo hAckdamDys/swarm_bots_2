@@ -9,6 +9,7 @@ from swarm_bots.utils.direction import Direction
 
 
 # TODO: implement later
+# noinspection PyMethodOverriding
 class LineScannerExecutor2(LineScannerExecutor):
     def _go_back_to_start_line(self, from_block_direction: Direction, line: LineToMiddle):
         line_start_position = line.start_coordinates.copy()

@@ -1,5 +1,4 @@
 import numpy as np
-import os
 
 
 # static grid where there are only goal
