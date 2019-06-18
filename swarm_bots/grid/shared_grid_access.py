@@ -44,8 +44,6 @@ class GridLockSync:
 
 
 class SharedGridAccess:
-    lock: Lock
-
     def __init__(self, grid: BaseGrid, manager: Manager):
         self.grid_lock_sync = GridLockSync(grid, manager)
 
