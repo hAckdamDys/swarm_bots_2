@@ -8,6 +8,7 @@ from swarm_bots.robot_executors.spiral.grid_edge import GridEdge
 from swarm_bots.robot_executors.spiral.highway_executor import HighwayExecutor
 from swarm_bots.robot_executors.spiral.line_scanners.line_scanner_executor import LineScannerExecutor
 from swarm_bots.tiles.robot import Robot
+from swarm_bots.utils.spin import Spin
 
 
 class SpiralRobotExecutor(RobotExecutor):
@@ -19,15 +20,14 @@ class SpiralRobotExecutor(RobotExecutor):
                  shared_grid_access: SharedGridAccess,
                  goal_building: GoalBuilding,
                  goal_to_edges_splitter: GoalToEdgesSplitter,
+                 spin: Spin,
                  start_offset: int = 0):
         super().__init__(robot, shared_grid_access, goal_building)
         self.start_offset = start_offset
         self.robot_coordinates = self.private_grid.get_coord_from_tile(robot)
         self.highway_executor = HighwayExecutor(
-            robot=self.robot,
-            robot_coordinates=self.robot_coordinates,
-            private_grid=self.private_grid,
-            shared_grid_access=self.shared_grid_access
+            shared_actions_executor=self.shared_actions_executor,
+            spin=spin
         )
         self.edges: List[GridEdge] = goal_to_edges_splitter.get_edges()
         self.edge = self.edges[0]
@@ -49,6 +49,7 @@ class SpiralRobotExecutor(RobotExecutor):
         self.highway_executor.go_get_source(source_position)
 
     def start_process(self):
+        # TODO: make sure logic is fine and test scenarios
         offset = self.start_offset
         self._go_get_source()
         line = self.edge.get_line(offset)
