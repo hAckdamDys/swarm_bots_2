@@ -1,7 +1,7 @@
 from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
-from swarm_bots.robot_executors.spiral.source_position import SourcePosition
+from swarm_bots.robot_executors.spiral.source_positions.position import SourcePosition
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.utils.coordinates import Coordinates
 

@@ -8,22 +8,19 @@ from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.robot_executors.spiral.goal_to_edges_splitters.goal_to_edges_splitter import GoalToEdgesSplitter
 from swarm_bots.robot_executors.spiral.grid_edge import GridEdge
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
-from swarm_bots.robot_executors.spiral.source_position import SourcePosition
+from swarm_bots.robot_executors.spiral.source_positions.spun_positions import SpunPositions
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.utils.direction import Direction
+from swarm_bots.utils.spin import Spin
 
 
 class GoalToEdgesXSplitter(GoalToEdgesSplitter):
-    def __init__(self, goal_building: GoalBuilding, robot_coordinates: Coordinates):
+    def __init__(self, goal_building: GoalBuilding, highway_spin: Spin):
         super().__init__(goal_building)
         width = self.goal_building.width
         height = self.goal_building.height
-        self.source_positions = list()
-        self.source_positions.append(SourcePosition(Coordinates(0, 0)))
-        self.source_positions.append(SourcePosition(Coordinates(0, height - 1)))
-        self.source_positions.append(SourcePosition(Coordinates(width - 1, height - 1)))
-        self.source_positions.append(SourcePosition(Coordinates(width - 1, 0)))
-        self.robot_coordinates = robot_coordinates
+        self.spin = highway_spin
+        self.spun_source_positions = SpunPositions(highway_spin, width, height)
         self.is_splitted = False
 
     def get_edges(self) -> List[GridEdge]:
@@ -34,7 +31,6 @@ class GoalToEdgesXSplitter(GoalToEdgesSplitter):
     def _split_goal(self):
         if self.is_splitted:
             return
-        self.edges: List[GridEdge] = list()
         width = self.goal_building.width
         height = self.goal_building.height
         # first add elements that are not on diagonals
@@ -99,11 +95,12 @@ class GoalToEdgesXSplitter(GoalToEdgesSplitter):
 
         both_diags = (raising_diag_grid + 2 * decreasing_diag_grid)
         # now we want to create lines for each edge:
-        edge_builds: List[EdgeBuild] = [EdgeBuild(width, height, direction.get_opposite()) for direction in Direction]
+        edge_builds: List[EdgeBuild] = list()
         edge_num = -1
-        for direction in Direction:
+        for direction in self.spin.get_directions():
             edge_num += 1
-            direction: Direction = direction
+            edge_build = EdgeBuild(width, height, direction.get_opposite())
+            edge_builds.append(edge_build)
             if direction.is_x_axis():
                 # for x axis we have y axis length amount of lines
                 edge_len = height
@@ -141,32 +138,47 @@ class GoalToEdgesXSplitter(GoalToEdgesSplitter):
                         edge_block_counts[edge_num] += 1
                     line_scan_coordinate = line_scan_coordinate.create_neighbour_coordinate(direction.get_opposite())
 
+        diags = (raising_diag_grid + 2 * decreasing_diag_grid)
         edge_num = -1
-        for direction in Direction:
+        self.edges: List[GridEdge] = list()
+        for direction in self.spin.get_directions():
             edge_num += 1
             edge_build = edge_builds[edge_num]
             lines: List[LineToMiddle] = list()
             for i in range(edge_build.length):
                 line = LineToMiddle(edge_build.line_starts[i], direction.get_opposite(), edge_build.block_lines[i])
                 lines.append(line)
-            edge = GridEdge(self.robot_coordinates, self.source_positions, edge_build.length, lines)
+                line_copy = line.copy()
+                while not line_copy.is_finished():
+                    pos = line_copy.get_next_block_position()
+                    line_copy.place_block()
+                    if direction == Direction.LEFT:
+                        diags[pos.get_array_index()] += 10
+                    elif direction == Direction.RIGHT:
+                        diags[pos.get_array_index()] += 20
+                    elif direction == Direction.DOWN:
+                        diags[pos.get_array_index()] += 40
+                    else:
+                        diags[pos.get_array_index()] += 80
+            edge = GridEdge(self.spun_source_positions, lines, direction, self.spin)
             self.edges.append(edge)
 
         # # TODO: delete later this is just for debug:
-        # diags = (raising_diag_grid + 2 * decreasing_diag_grid).T
-        # diags = np.flip(diags, 0)
-        # print(diags, "a")
+        diags = diags.T
+        # diags = np.flip(diags, 1)
+        diags = np.flip(diags, 0)
+        print(diags, "a")
 
 
 class EdgeBuild:
     def __init__(self, width: int, height: int, line_direction: Direction):
         self.line_starts: List[Coordinates] = list()
         if line_direction.is_x_axis():
-            self.length = width
-            self.block_lines = np.zeros((width, height), dtype=bool)
-        else:
             self.length = height
             self.block_lines = np.zeros((height, width), dtype=bool)
+        else:
+            self.length = width
+            self.block_lines = np.zeros((width, height), dtype=bool)
         self.line_direction = line_direction
 
     def add_line_start(self, coord: Coordinates):
@@ -271,13 +283,18 @@ if __name__ == '__main__':
     goal_building_mock = GoalBuildingMock()
     building = GoalBuilding2D(
         """
-        0 0 0 0 0
-        0 0 1 0 0
-        0 1 1 1 0
-        0 0 1 0 0
-        0 0 0 0 0
+        0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 0 0 0 0 1 0 0 0 0 0 0 0
+        0 0 0 0 0 1 0 1 0 0 0 0 0 0
+        0 0 0 0 0 0 1 0 0 0 0 0 0 0
+        0 1 0 0 0 0 0 0 0 0 1 1 1 0
+        0 1 0 0 0 0 0 0 0 0 0 0 0 0
+        0 1 0 0 0 0 0 0 0 0 0 0 0 0
+        0 0 0 0 0 0 1 1 0 0 0 0 0 0
+        0 0 0 0 0 0 0 0 0 0 0 0 0 0
+        1 1 0 0 0 0 0 0 0 0 0 0 1 1
         """
     )
-    splitter = GoalToEdgesXSplitter(building, Coordinates(1, 0))
+    splitter = GoalToEdgesXSplitter(building, Spin.ANTI_CLOCKWISE)
     # noinspection PyProtectedMember
     splitter._split_goal()
