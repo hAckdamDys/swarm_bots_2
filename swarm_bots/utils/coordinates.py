@@ -17,6 +17,17 @@ class Coordinates:
             return Direction.RIGHT
         return Direction.LEFT
 
+    def get_edge_side(self, width: int, height: int) -> Direction:
+        if (self.x == 0 or self.x == width) and (self.y == 0 or self.y == height):
+            raise ValueError("cannot get edge from corner")
+        if self.x == 0:
+            return Direction.LEFT
+        elif self.x == width:
+            return Direction.RIGHT
+        elif self.y == 0:
+            return Direction.DOWN
+        return Direction.UP
+
     def get_straight_distance_to_other(self, direction: Direction, to_coordinates: 'Coordinates') -> int:
         if self.x != to_coordinates.x and self.y != to_coordinates.y:
             raise ValueError("x or y coordinate must be same to get straight distance")
