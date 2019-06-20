@@ -1,5 +1,4 @@
 from multiprocessing import Manager
-from threading import Lock
 
 from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.grid.errors.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
