@@ -1,4 +1,6 @@
 from PIL import Image
+from difflib import SequenceMatcher
+
 from swarm_bots.goal.goal_building import GoalBuilding
 
 persistance = 255
@@ -6,15 +8,20 @@ persistance = 255
 def create_grid_from_file(file):
     a = Image.open(file)
     pix = a.load()
-    converted_image = ""
+    converted_image = """"""
+    converted_image += "\n            "
     for j in range(a.size[1]):
         for i in range(a.size[0]):
             if pix[i, j] == (0, 0, 0, persistance):
                 converted_image += "0"
             elif pix[i, j] == (255, 255, 255, persistance):
                 converted_image += "1"
-        converted_image += "\n"
-    return converted_image
+            if a.size[0]-i > 1:
+                converted_image += " "
+        converted_image += "\n            "
+    return GoalBuilding(converted_image)
 
 
-# def calculate_procentage_difference()
+
+def calculate_procentage_difference(goal_grid, result_grid):
+    return str(SequenceMatcher(None, str(goal_grid), str(result_grid)).ratio()*100)+'%'
