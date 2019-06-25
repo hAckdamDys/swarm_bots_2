@@ -1,4 +1,4 @@
-from multiprocessing import Manager, Process
+from multiprocessing import Manager
 from unittest import TestCase
 
 from swarm_bots.goal.goal_building import GoalBuilding
@@ -8,7 +8,7 @@ from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.hit_information import HitType
 from swarm_bots.robot_executors.robot_executor import RobotExecutor
 from swarm_bots.robot_executors.robot_shared_actions_executor import RobotSharedActionsExecutor
-from swarm_bots.robot_executors.spiral.line_scanner_executor import LineScannerExecutor
+from swarm_bots.robot_executors.spiral.line_scanners.line_scanner_executor import LineScannerExecutor
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.tiles.tile import Tile, TileType
@@ -20,12 +20,6 @@ class LineScannerWrapperExecutor(RobotExecutor):
     def __init__(self, line: LineToMiddle, robot: Robot, shared_grid_access: SharedGridAccess,
                  goal_building: GoalBuilding):
         super().__init__(robot, shared_grid_access, goal_building)
-        self.shared_actions_executor = RobotSharedActionsExecutor(
-            robot=robot,
-            shared_grid_access=shared_grid_access,
-            private_grid=self.private_grid,
-            robot_coordinates=self.robot_coordinates
-        )
         self.line = line.copy()
         self.line_scanner = LineScannerExecutor(self.shared_actions_executor)
 
@@ -44,6 +38,7 @@ class LineScannerWrapperExecutor(RobotExecutor):
                 hit_information = self.shared_actions_executor.try_move_robot(to_start_direction.get_opposite())
                 if hit_information.hit_type == HitType.ROBOT:
                     self.shared_actions_executor.wait_action()
+        print(f"robot: {self.robot} put {self.shared_actions_executor.put_blocks} blocks")
 
 
 class TestLineScannerExecutor(TestCase):

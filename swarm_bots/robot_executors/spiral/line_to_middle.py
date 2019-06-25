@@ -28,6 +28,14 @@ class LineToMiddle:
         self.start_coordinates = start_coordinates.copy()
         self.blocks_placed = 0
         self.blocks_to_place = len(self.block_positions)
+        # last position where block could be placed or not
+        if not self.is_finished():
+            self.last_position = self.start_coordinates.create_moved_coordinate(
+                self.direction,
+                self.block_positions[0]
+            )
+        else:
+            self.last_position = self.start_coordinates
 
     def get_to_block_direction(self) -> Direction:
         return self.direction
@@ -38,15 +46,18 @@ class LineToMiddle:
     def get_next_block_position(self) -> Coordinates:
         return self.start_coordinates.create_moved_coordinate(self.direction, self.block_positions[0])
 
+    def get_last_position(self) -> Coordinates:
+        return self.last_position
+
     def place_block(self) -> Coordinates:
         if self.is_finished():
             raise ValueError("cannot place block when line finished")
         self.blocks_placed += 1
-        return self.start_coordinates.create_moved_coordinate(self.get_to_block_direction(),self.block_positions.pop(0))
-
-    # TODO: implement
-    def get_offset(self) -> int:
-        raise NotImplementedError()
+        self.last_position = self.start_coordinates.create_moved_coordinate(
+            self.get_to_block_direction(),
+            self.block_positions.pop(0)
+        )
+        return self.last_position
 
     def is_finished(self) -> bool:
         return self.blocks_placed == self.blocks_to_place
@@ -57,3 +68,6 @@ class LineToMiddle:
 
     def copy(self):
         return self.__copy__()
+
+    def __hash__(self):
+        return hash((self.direction, self.start_coordinates))

@@ -1,13 +1,13 @@
 import copy
 from typing import Union
 
-from swarm_bots.tiles.has_inner_block_error import HasInnerBlockError
-from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
-from swarm_bots.tiles.no_inner_block_error import NoInnerBlockError
+from swarm_bots.tiles.errors.has_inner_block_error import HasInnerBlockError
+from swarm_bots.tiles.errors.impossible_robot_movement_error import ImpossibleRobotMovementError
+from swarm_bots.tiles.errors.no_inner_block_error import NoInnerBlockError
 from swarm_bots.tiles.tile import Tile, TileType
-from swarm_bots.tiles.wrong_block_get_direction import WrongBlockGetDirection
-from swarm_bots.tiles.wrong_block_put_direction import WrongBlockPutDirection
-from swarm_bots.tiles.wrong_block_type_error import WrongBlockTypeError
+from swarm_bots.tiles.errors.wrong_block_get_direction import WrongBlockGetDirection
+from swarm_bots.tiles.errors.wrong_block_put_direction import WrongBlockPutDirection
+from swarm_bots.tiles.errors.wrong_block_type_error import WrongBlockTypeError
 from swarm_bots.utils.direction import Direction
 
 

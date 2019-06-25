@@ -2,13 +2,13 @@ from multiprocessing import Manager
 from unittest import TestCase
 
 from swarm_bots.grid.base_grid import BaseGrid
-from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
+from swarm_bots.grid.errors.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
-from swarm_bots.grid.tile_taken_exception import TileTakenException
+from swarm_bots.grid.errors.tile_taken_exception import TileTakenException
 from swarm_bots.robot_executors.hit_information import HitType
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.tiles.tile import Tile, TileType
-from swarm_bots.tiles.wrong_block_put_direction import WrongBlockPutDirection
+from swarm_bots.tiles.errors.wrong_block_put_direction import WrongBlockPutDirection
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.utils.direction import Direction
 
