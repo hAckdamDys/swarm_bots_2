@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from swarm_bots.grid.base_grid import BaseGrid
-from swarm_bots.grid.tile_already_added_exception import TileAlreadyAddedException
-from swarm_bots.grid.tile_taken_exception import TileTakenException
+from swarm_bots.grid.errors.tile_already_added_exception import TileAlreadyAddedException
+from swarm_bots.grid.errors.tile_taken_exception import TileTakenException
 from swarm_bots.tiles.tile import Tile, TileType
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.utils.direction import Direction

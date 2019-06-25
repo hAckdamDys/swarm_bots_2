@@ -43,7 +43,7 @@ class RobotExecutorMockRotate(RobotExecutor):
         self.where_rotate = where_rotate
 
     def start_process(self):
-        sleep(self.how_long_sleep)
+        sleep(self.how_long_sleep*0.01)
         self.shared_actions_executor.try_rotate_robot(self.where_rotate)
         with self.shared_grid_access.grid_lock_sync as grid:
             if self.how_long_sleep == RobotExecutorMockRotate.robot1_sleep:
@@ -77,7 +77,7 @@ class RobotExecutorMockMove(RobotExecutor):
         )
 
     def start_process(self):
-        sleep(self.how_long_sleep)
+        sleep(self.how_long_sleep*0.01)
         self.shared_actions_executor.try_move_robot(self.move_direction)
         with self.shared_grid_access.grid_lock_sync as grid:
             

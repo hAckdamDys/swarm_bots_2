@@ -10,13 +10,14 @@ from swarm_bots.utils.direction import Direction
 
 
 class RobotSharedActionsExecutor:
-    wait_time_seconds = 1
+    _wait_time_ticks = 1
 
     def __init__(self,
                  robot: Robot,
                  shared_grid_access: SharedGridAccess,
                  private_grid: BaseGrid,
                  robot_coordinates: Coordinates):
+        self.put_blocks = 0
         self.robot_coordinates = robot_coordinates
         self.robot = robot
         self.shared_grid_access = shared_grid_access
@@ -30,6 +31,8 @@ class RobotSharedActionsExecutor:
             raise RuntimeError("robot action failed with unknown error")
 
     def try_rotate_robot(self, direction: Direction) -> HitInformation:
+        if self.robot.rotation == direction:
+            return HitInformation(HitType.ROTATED, updated_robot=self.robot)
         hit_information = self.shared_grid_access.try_rotate_robot(self.robot, direction)
         RobotSharedActionsExecutor._hit_error_validator(hit_information)
         if hit_information.hit_type == HitType.ROTATED:
@@ -61,10 +64,14 @@ class RobotSharedActionsExecutor:
         RobotSharedActionsExecutor._hit_error_validator(hit_information)
         if hit_information.hit_type == HitType.PLACED_BLOCK:
             self.private_grid.add_tile_to_grid(self.robot.pop_block(), self._get_robot_neighbour_coordinates(direction))
+            self.put_blocks += 1
             # no need to update robot we already popped block
         elif hit_information.hit_type == HitType.BLOCK:
-            self.private_grid.add_tile_to_grid(
-                Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))
+            try:
+                self.private_grid.add_tile_to_grid(
+                    Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))
+            except Exception as e:
+                print(f"WARNING {e}")
         elif hit_information.hit_type == HitType.OBSTACLE:
             self.private_grid.add_tile_to_grid(
                 Tile(TileType.OBSTACLE), self._get_robot_neighbour_coordinates(direction))
@@ -75,6 +82,11 @@ class RobotSharedActionsExecutor:
         RobotSharedActionsExecutor._hit_error_validator(hit_information)
         if hit_information.hit_type == HitType.GOT_BLOCK:
             self.robot.update_from_robot(hit_information.updated_robot)
+            block_coordinates = self.robot_coordinates.create_neighbour_coordinate(direction)
+            if self.private_grid.get_tile_from_grid(block_coordinates).get_type() != TileType.SOURCE:
+                self.private_grid.pop_tile_from_grid(block_coordinates)
+                # if robot took block then his total is -1
+                self.put_blocks -= 1
         elif hit_information.hit_type == HitType.BLOCK:
             self.private_grid.add_tile_to_grid(
                 Tile(TileType.BLOCK), self._get_robot_neighbour_coordinates(direction))
@@ -83,7 +95,10 @@ class RobotSharedActionsExecutor:
                 Tile(TileType.OBSTACLE), self._get_robot_neighbour_coordinates(direction))
         return hit_information
 
+    def finish_robot(self):
+        self.shared_grid_access.finish_robot(self.robot)
+
     @staticmethod
     def wait_action():
         # TODO: maybe implement maximum tries after which raise error
-        time.sleep(RobotSharedActionsExecutor.wait_time_seconds)
+        time.sleep(RobotSharedActionsExecutor._wait_time_ticks)

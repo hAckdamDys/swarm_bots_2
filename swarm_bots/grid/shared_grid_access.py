@@ -1,19 +1,19 @@
 from multiprocessing import Manager
-from threading import Lock
 
 from swarm_bots.grid.base_grid import BaseGrid
-from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
-from swarm_bots.grid.tile_not_exists_exception import TileNotExistsException
-from swarm_bots.grid.tile_not_source_error import TileNotSourceError
-from swarm_bots.grid.tile_taken_exception import TileTakenException
+from swarm_bots.grid.errors.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
+from swarm_bots.grid.errors.tile_not_exists_exception import TileNotExistsException
+from swarm_bots.grid.errors.tile_not_source_error import TileNotSourceError
+from swarm_bots.grid.errors.tile_taken_exception import TileTakenException
 from swarm_bots.robot_executors.hit_information import HitInformation, HitType
 from swarm_bots.robot_executors.wrong_tile_error import WrongTileError
-from swarm_bots.tiles.has_inner_block_error import HasInnerBlockError
-from swarm_bots.tiles.impossible_robot_movement_error import ImpossibleRobotMovementError
-from swarm_bots.tiles.no_inner_block_error import NoInnerBlockError
+from swarm_bots.tiles.errors.has_inner_block_error import HasInnerBlockError
+from swarm_bots.tiles.errors.impossible_robot_movement_error import ImpossibleRobotMovementError
+from swarm_bots.tiles.errors.no_inner_block_error import NoInnerBlockError
 from swarm_bots.tiles.robot import Robot
-from swarm_bots.tiles.wrong_block_get_direction import WrongBlockGetDirection
-from swarm_bots.tiles.wrong_block_put_direction import WrongBlockPutDirection
+from swarm_bots.tiles.tile import TileType
+from swarm_bots.tiles.errors.wrong_block_get_direction import WrongBlockGetDirection
+from swarm_bots.tiles.errors.wrong_block_put_direction import WrongBlockPutDirection
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.utils.direction import Direction
 
@@ -43,29 +43,12 @@ class GridLockSync:
 
 
 class SharedGridAccess:
-    lock: Lock
-
     def __init__(self, grid: BaseGrid, manager: Manager):
         self.grid_lock_sync = GridLockSync(grid, manager)
-        # when simulation is not started we can add elements and do more
-        # self.simulation_started = False
 
     def get_private_copy(self):
         with self.grid_lock_sync as grid:
             return grid.copy()
-
-    # This should be done to BaseGrid added before access is even made
-    # def add_tile(self, tile: Tile, coordinates: Coordinates):
-    #     if self.simulation_started:
-    #         raise SimulationStartedError("cannot add tile when simulation started")
-    #     with self.lock:
-    #         self.grid.add_tile_to_grid(tile=tile, coordinates=coordinates)
-    #
-    # def remove_tile(self, coordinates: Coordinates):
-    #     if self.simulation_started:
-    #         raise SimulationStartedError("cannot add tile when simulation started")
-    #     with self.lock:
-    #         self.grid.remove_tile_from_grid(coordinates)
 
     @staticmethod
     def _get_robot_coordinates(grid: BaseGrid, robot: Robot) -> Coordinates:
@@ -115,7 +98,7 @@ class SharedGridAccess:
             except OutOfBoundCoordinatesError as e:
                 return HitInformation(HitType.ERROR, e)
             # no need to update robot cause inner state is the same
-            print("robot: ", robot, "moved to ", new_coordinates)
+            # print("robot: ", robot, "moved to ", new_coordinates)
             return HitInformation(HitType.NO_HIT, updated_robot=robot)
 
     # returns HitType.PLACED_BLOCK if placed block correctly
@@ -144,10 +127,23 @@ class SharedGridAccess:
                 coordinates = SharedGridAccess._get_robot_coordinates(grid, robot)
                 source_coordinates = coordinates.create_neighbour_coordinate(direction)
                 robot.validate_get_block_direction(direction)
-                block = grid.get_tile_from_source(source_coordinates)
+                if grid.get_tile_from_grid(source_coordinates).get_type() == TileType.BLOCK:
+                    block = grid.pop_tile_from_grid(source_coordinates)
+                else:
+                    block = grid.get_tile_from_source(source_coordinates)
                 robot.take_block(block)
             except (OutOfBoundCoordinatesError, TileNotExistsException, TileNotSourceError,
                     WrongTileError, HasInnerBlockError, WrongBlockGetDirection) as e:
                 return HitInformation(HitType.ERROR, e)
             grid.update_tile(robot)
             return HitInformation(HitType.GOT_BLOCK, updated_robot=robot)
+
+    def finish_robot(self, robot: Robot):
+        robot = robot.copy()
+        with self.grid_lock_sync as grid:
+            try:
+                coordinates = SharedGridAccess._get_robot_coordinates(grid, robot)
+            except WrongTileError as e:
+                return HitInformation(HitType.ERROR, e)
+            grid.remove_tile_from_grid(coordinates)
+            return HitInformation(HitType.ROTATED, updated_robot=robot)
