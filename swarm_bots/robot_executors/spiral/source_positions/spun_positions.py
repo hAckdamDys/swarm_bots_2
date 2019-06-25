@@ -11,23 +11,25 @@ class SpunPositions:
         self.spin = spin
 
     def get_position(self, direction: Direction) -> SourcePosition:
+        max_x = self.width - 1
+        max_y = self.height - 1
         if direction == Direction.LEFT:
             if self.spin == Spin.CLOCKWISE:
                 return SourcePosition(Coordinates(0, 0))
             else:
-                return SourcePosition(Coordinates(0, self.height))
+                return SourcePosition(Coordinates(0, max_y))
         elif direction == Direction.UP:
             if self.spin == Spin.CLOCKWISE:
-                return SourcePosition(Coordinates(0, self.height))
+                return SourcePosition(Coordinates(0, max_y))
             else:
-                return SourcePosition(Coordinates(self.width, self.height))
+                return SourcePosition(Coordinates(max_x, max_y))
         elif direction == Direction.RIGHT:
             if self.spin == Spin.CLOCKWISE:
-                return SourcePosition(Coordinates(self.width, self.height))
+                return SourcePosition(Coordinates(max_x, max_y))
             else:
-                return SourcePosition(Coordinates(self.width, 0))
+                return SourcePosition(Coordinates(max_x, 0))
         elif direction == Direction.DOWN:
             if self.spin == Spin.CLOCKWISE:
-                return SourcePosition(Coordinates(self.width, 0))
+                return SourcePosition(Coordinates(max_x, 0))
             else:
                 return SourcePosition(Coordinates(0, 0))

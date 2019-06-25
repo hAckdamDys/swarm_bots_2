@@ -6,17 +6,21 @@ from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.robot_shared_actions_executor import RobotSharedActionsExecutor
 from swarm_bots.robot_executors.robot_shared_actions_executor_with_sleep import RobotSharedActionsExecutorWithSleep
 from swarm_bots.tiles.robot import Robot
+from swarm_bots.utils.coordinates import Coordinates
 
 
 class RobotExecutor(metaclass=abc.ABCMeta):
     def __init__(self, robot: Robot, shared_grid_access: SharedGridAccess, goal_building: GoalBuilding,
-                 sleep_tick_seconds: float = None):
+                 sleep_tick_seconds: float = None, robot_coordinates: Coordinates = None):
         self.robot = robot
         self.goal_building = goal_building
         self.shared_grid_access = shared_grid_access
         self.private_grid = self.shared_grid_access.get_private_copy()
         self.process = Process(target=self.start_process)
-        self.robot_coordinates = self.private_grid.get_coord_from_tile(self.robot)
+        if robot_coordinates is None:
+            self.robot_coordinates = self.private_grid.get_coord_from_tile(self.robot)
+        else:
+            self.robot_coordinates = robot_coordinates.copy()
         if sleep_tick_seconds is None:
             self.shared_actions_executor = RobotSharedActionsExecutor(
                 robot=robot,

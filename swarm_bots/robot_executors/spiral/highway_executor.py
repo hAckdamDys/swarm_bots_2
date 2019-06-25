@@ -92,9 +92,9 @@ class HighwayExecutor:
             return
             # raise ValueError("cannot go get source if robot has source")
         source_pos = source.coordinates
-        if source_pos.x != 0 or source_pos != self.width:
+        if source_pos.x != 0 and source_pos.x != self.width - 1:
             raise ValueError("source need to be in corner but x coord is not")
-        if source_pos.y != 0 or source_pos != self.height:
+        if source_pos.y != 0 and source_pos.y != self.height - 1:
             raise ValueError("source need to be in corner but y coord is not")
         pre_source_pos = self.spin.get_pre_corner_coordinates(source_pos)
         self._go_to_goal(pre_source_pos)

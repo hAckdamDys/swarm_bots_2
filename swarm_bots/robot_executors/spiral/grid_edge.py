@@ -49,12 +49,15 @@ class GridEdge:
         offset = self.length - self.how_many_finished - 1 - self.last_offset
         return self.get_line(offset)
 
+    def get_next_offset(self) -> int:
+        return self.last_offset + 3
+
     def is_finished(self) -> bool:
         return self.how_many_finished == self.length
 
     def set_line_finished(self, line: LineToMiddle):
         line_index = self.indexes_from_lines[line]
-        self.not_finished_line_indexes.popitem(line_index)
+        self.not_finished_line_indexes.pop(line_index)
         self.how_many_finished += 1
 
     def get_number_of_finished_lines(self):

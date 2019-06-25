@@ -22,7 +22,7 @@ class Coordinates:
             raise ValueError("cannot get edge from corner")
         if self.x == 0:
             return Direction.LEFT
-        elif self.x == width:
+        elif self.x == width - 1:
             return Direction.RIGHT
         elif self.y == 0:
             return Direction.DOWN

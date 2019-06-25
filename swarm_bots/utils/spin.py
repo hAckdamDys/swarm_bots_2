@@ -15,7 +15,7 @@ class Spin(Enum):
         return Spin.CLOCKWISE
 
     def get_pre_corner_coordinates(self, corner: Coordinates) -> Coordinates:
-        if self == Spin.CLOCKWISE:
+        if self == Spin.ANTI_CLOCKWISE:
             if corner.x == 0:
                 if corner.y == 0:
                     return Coordinates(0, 1)
@@ -57,23 +57,25 @@ class Spin(Enum):
             return Direction.UP
 
     def get_edge_next_corner(self, edge_side: Direction, width: int, height: int) -> Coordinates:
+        max_x = width - 1
+        max_y = height - 1
         if self == Spin.CLOCKWISE:
             if edge_side == Direction.UP:
-                return Coordinates(width, height)
+                return Coordinates(max_x, max_y)
             elif edge_side == Direction.RIGHT:
-                return Coordinates(width, 0)
+                return Coordinates(max_x, 0)
             elif edge_side == Direction.DOWN:
                 return Coordinates(0, 0)
             else:
-                return Coordinates(0, height)
+                return Coordinates(0, max_y)
         if edge_side == Direction.UP:
-            return Coordinates(0, height)
+            return Coordinates(0, max_y)
         elif edge_side == Direction.LEFT:
             return Coordinates(0, 0)
         elif edge_side == Direction.DOWN:
-            return Coordinates(width, 0)
+            return Coordinates(max_x, 0)
         else:
-            return Coordinates(width, height)
+            return Coordinates(max_x, max_y)
 
     def get_directions(self) -> List[Direction]:
         if self == Spin.CLOCKWISE:
