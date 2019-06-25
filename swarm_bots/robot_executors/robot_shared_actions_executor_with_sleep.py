@@ -11,11 +11,17 @@ from swarm_bots.utils.direction import Direction
 
 
 class RobotSharedActionsExecutorWithSleep(RobotSharedActionsExecutor):
-    _wait_time_ticks = 10
-    _rotate_time_ticks = 2
-    _move_time_ticks = 4
-    _put_block_time_ticks = 3
-    _get_block_time_ticks = 3
+    # _wait_time_ticks = 10
+    # _rotate_time_ticks = 2
+    # _move_time_ticks = 4
+    # _put_block_time_ticks = 3
+    # _get_block_time_ticks = 3
+
+    _wait_time_ticks = 1
+    _rotate_time_ticks = 1
+    _move_time_ticks = 1
+    _put_block_time_ticks = 1
+    _get_block_time_ticks = 1
 
     def __init__(self, robot: Robot, shared_grid_access: SharedGridAccess, private_grid: BaseGrid,
                  robot_coordinates: Coordinates, sleep_tick_seconds: float = 0.1):
@@ -50,7 +56,7 @@ class RobotSharedActionsExecutorWithSleep(RobotSharedActionsExecutor):
         return hit_information
 
     def wait_action(self):
-        ticks = self._wait_time_ticks * (0.9 + random() / 5)
+        ticks = self._wait_time_ticks #* (0.9 + random() / 5)
         time.sleep(self.sleep_tick_seconds * ticks)
         self.total_ticks += ticks
 

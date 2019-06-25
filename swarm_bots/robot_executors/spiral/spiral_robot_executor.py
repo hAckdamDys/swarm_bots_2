@@ -81,7 +81,7 @@ class SpiralRobotExecutor(RobotExecutor):
                 line_repeated += 1
             else:
                 line_repeated = 0
-            if line_repeated > 10:
+            if line_repeated > 2:
                 self._go_around()
                 line_repeated = 0
             last_line = line
