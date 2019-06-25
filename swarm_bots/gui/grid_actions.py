@@ -1,7 +1,7 @@
 from PIL import Image
 from difflib import SequenceMatcher
 
-from swarm_bots.goal.goal_building import GoalBuilding
+from swarm_bots.goal.goal_building_2d import GoalBuilding2D
 
 persistance = 255
 
@@ -19,7 +19,7 @@ def create_grid_from_file(file):
             if a.size[0]-i > 1:
                 converted_image += " "
         converted_image += "\n            "
-    return GoalBuilding(converted_image)
+    return GoalBuilding2D(converted_image)
 
 
 

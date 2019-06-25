@@ -9,6 +9,7 @@ from swarm_bots.gui.grid_actions import create_grid_from_file
 from swarm_bots.gui.grid_actions import calculate_procentage_difference
 
 from multiprocessing import Manager
+from typing import List
 
 from swarm_bots.tiles.robot import Robot
 from swarm_bots.utils.direction import Direction
@@ -17,6 +18,9 @@ from swarm_bots.grid.base_grid import BaseGrid
 from swarm_bots.utils.coordinates import Coordinates
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.robot_executors.robot_executor import RobotExecutor
+from swarm_bots.utils.spin import Spin
+from swarm_bots.robot_executors.spiral.goal_to_edges_splitters.goal_to_edges_x_splitter import GoalToEdgesXSplitter
+from swarm_bots.robot_executors.spiral.spiral_robot_executor import SpiralRobotExecutor
 
 
 SIZE = 400
@@ -105,27 +109,51 @@ class CreateGridWindow(tk.Frame):
         myvar.grid(column=goal_building.width+1, row = 10, columnspan=50, rowspan=50)
 
         def create_simulation(parent, controller, goal_building):
-            # robots = []
-            # for i in range(len(grid_window)):
-            #     for j in range(len(grid_window[i])):
-            #         if grid_window[i][j].cget('bg') == 'yellow':
-            #             robots.append((i, j))
-            # for single_robot_coordinates in robots:
-            #     i, j = single_robot_coordinates
-            #     robot = Robot(Direction.DOWN)
-            #     robot_source = Tile(TileType.SOURCE)
-            #     robot_coordinates = Coordinates(i, j)
-            #     base_grid = BaseGrid(goal_building.width, goal_building.height)
-            #     base_grid.add_tile_to_grid(robot, robot_coordinates)
-            #     base_grid.add_tile_to_grid(robot_source, robot_coordinates.create_neighbour_coordinate(Direction.UP))
-            #     # line_start_coordinates = Coordinates(0, 0)
-            #     shared_grid_access = SharedGridAccess(base_grid, manager=Manager())
-            #     robot_executor = RobotExecutor(robot, shared_grid_access, goal_building)
-            #     robot_executor.start_working()
-            #     robot_executor.wait_for_finish()
-            #     grid = shared_grid_access.get_private_copy()
-            #     # print(grid)
-            controller.show_frame(GridWindow(parent, controller, goal_building))
+            robots: List[Robot] = list()
+            robots_pos: List[Coordinates] = list()
+            for i in range(len(grid_window)):
+                for j in range(len(grid_window[i])):
+                    if grid_window[i][j].cget('bg') == 'yellow':
+                        robots.append(Robot(Direction.UP))
+                        robots_pos.append(Coordinates(i, j))
+            base_grid = BaseGrid(goal_building.width, goal_building.height)
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, 0))
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(goal_building.width - 1, 0))
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(goal_building.width - 1, goal_building.height - 1))
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, goal_building.height - 1))
+
+            shared_grid_access = SharedGridAccess(base_grid, manager=Manager())
+            spin = Spin.CLOCKWISE
+            goal_to_edges_splitter = GoalToEdgesXSplitter(goal_building, spin)
+
+            robot_executors: List[RobotExecutor] = list()
+
+            for i in range(len(robots)):
+                robot_executors.append(SpiralRobotExecutor(
+                    robot=robots[i],
+                    shared_grid_access=shared_grid_access,
+                    goal_building=goal_building,
+                    goal_to_edges_splitter=goal_to_edges_splitter,
+                    spin=spin,
+                    start_offset=i,
+                    start_edge_index=0,
+                    robot_coordinates=robots_pos[i],
+                    sleep_tick_seconds=0
+                ))
+
+            with shared_grid_access.grid_lock_sync as grid:
+                for i in range(len(robots)):
+                    grid.add_tile_to_grid(robots[i], robots_pos[i])
+
+            for i in range(len(robots)):
+                robot_executors[i].start_working()
+
+            for i in range(len(robots)):
+                robot_executors[i].wait_for_finish()
+
+            grid = shared_grid_access.get_private_copy()
+
+            controller.show_frame(GridWindow(parent, controller, goal_building, grid))
 
         def change_tile_type(col, row):
             if grid_window[col][row].cget('bg') == 'grey76':
@@ -142,10 +170,11 @@ class CreateGridWindow(tk.Frame):
 
 class GridWindow(tk.Frame):
 
-    def __init__(self, parent, controller, goal_building):
+    def __init__(self, parent, controller, goal_building, current_grid):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.goal_building = goal_building
+        self.current_grid = current_grid
 
         result_building = goal_building
 
@@ -153,7 +182,7 @@ class GridWindow(tk.Frame):
         button2 = tk.Button(self, text=">>", command=lambda: controller.show_frame(FinalGridWindow(parent, controller, goal_building, result_building)))
         button1.grid(row = goal_building.height+1, columnspan=50)
         button2.grid(row = goal_building.height+1, column = 1, columnspan=50)
-        print_grid(self, convert_global_grid_to_local(goal_building), goal_building.height, goal_building.width)
+        print_shared_grid(self, current_grid)
 
 
 class FinalGridWindow(tk.Frame):
@@ -199,7 +228,7 @@ def convert_global_grid_to_local(grid):
     return grid.grid[...,::-1]
 
 
-def print_grid(self, grid, height, width, robots=None):
+def print_grid(self, grid, height, width):
     grid_window = [[None for x in range(height)] for y in range(width)]
     for row in range(height):
         self.rowconfigure(row, weight=1)
@@ -213,3 +242,24 @@ def print_grid(self, grid, height, width, robots=None):
                 btn = tk.Button(self, state='disabled', bg='grey76')
             btn.grid(row=row, column=col, sticky="nsew")
             grid_window[col][row] = btn
+
+
+def print_shared_grid(self, grid):
+    grid_window = [[tk.Button(self, state='disabled', bg='grey76') for x in range(grid.height)] for y in range(grid.width)]
+    for tile_index, tile in grid.tiles_from_index.items():
+        coordinate = grid.get_coord_from_tile(tile)
+        print(coordinate)
+
+
+    # for row in range(grid.height):
+    #     self.rowconfigure(row, weight=1)
+    #     for col in range(grid.width):
+    #         self.columnconfigure(col, weight=1)
+    #         if grid[col][row] == 1:
+    #             btn = tk.Button(self, state='disabled', bg='black')
+    #         elif grid[col][row] == 2:
+    #             btn = tk.Button(self, state='disabled', bg='yellow')
+    #         else:
+    #             btn = tk.Button(self, state='disabled', bg='grey76')
+    #         btn.grid(row=row, column=col, sticky="nsew")
+    #         grid_window[col][row] = btn
