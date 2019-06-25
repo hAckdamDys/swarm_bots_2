@@ -1,15 +1,7 @@
-from swarm_bots.goal.goal_building import GoalBuilding
-from swarm_bots.gui.display_interface import Window
+from swarm_bots.gui.interface import Window
 
 
 def main():
-    goal_building = GoalBuilding("""
-        0 0 0 0 0 0
-        0 0 0 0 0 0
-        0 0 0 0 0 0
-        0 0 0 0 0 0
-        0 0 0 0 0 0
-        """)
     app = Window()
     app.mainloop()
 
