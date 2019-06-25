@@ -95,6 +95,9 @@ class RobotSharedActionsExecutor:
                 Tile(TileType.OBSTACLE), self._get_robot_neighbour_coordinates(direction))
         return hit_information
 
+    def finish_robot(self):
+        self.shared_grid_access.finish_robot(self.robot)
+
     @staticmethod
     def wait_action():
         # TODO: maybe implement maximum tries after which raise error

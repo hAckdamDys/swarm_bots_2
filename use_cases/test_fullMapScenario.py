@@ -21,13 +21,13 @@ class TestFullMapScenario(TestCase):
                0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
                0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
                0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-               0 1 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 0 1 0 0 0 0 0
-               0 1 0 0 0 1 0 0 1 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
-               0 1 0 0 0 1 0 0 1 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
-               0 1 0 0 0 1 0 0 0 0 1 1 1 0 0 1 0 0 1 0 0 0 0 0
-               0 1 0 0 0 1 0 0 0 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
-               0 1 0 0 0 1 0 0 0 0 0 1 1 0 1 0 0 0 1 0 0 0 0 0
-               0 1 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0
+               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 0 1 0 0 0 0 0
+               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
+               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
+               0 0 0 0 0 1 0 0 0 0 1 1 1 0 0 1 0 0 1 0 0 0 0 0
+               0 0 0 0 0 1 0 0 0 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
+               0 0 0 0 0 1 0 0 0 0 0 1 1 0 1 0 0 0 1 0 0 0 0 0
+               0 0 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0
                0 0 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0
                0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
                0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
@@ -62,7 +62,7 @@ class TestFullMapScenario(TestCase):
             start_offset=3,
             start_edge_index=0,
             robot_coordinates=robot_1_coordinates,
-            sleep_tick_seconds=0.001
+            sleep_tick_seconds=0.0001
         )
 
         robot_2_executor = SpiralRobotExecutor(
@@ -74,7 +74,7 @@ class TestFullMapScenario(TestCase):
             start_offset=6,
             start_edge_index=0,
             robot_coordinates=robot_2_coordinates,
-            sleep_tick_seconds=0.001
+            sleep_tick_seconds=0.0001
         )
 
         with shared_grid_access.grid_lock_sync as grid:

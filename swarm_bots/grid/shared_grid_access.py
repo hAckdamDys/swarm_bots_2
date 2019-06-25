@@ -137,3 +137,13 @@ class SharedGridAccess:
                 return HitInformation(HitType.ERROR, e)
             grid.update_tile(robot)
             return HitInformation(HitType.GOT_BLOCK, updated_robot=robot)
+
+    def finish_robot(self, robot: Robot):
+        robot = robot.copy()
+        with self.grid_lock_sync as grid:
+            try:
+                coordinates = SharedGridAccess._get_robot_coordinates(grid, robot)
+            except WrongTileError as e:
+                return HitInformation(HitType.ERROR, e)
+            grid.remove_tile_from_grid(coordinates)
+            return HitInformation(HitType.ROTATED, updated_robot=robot)

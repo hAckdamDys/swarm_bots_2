@@ -31,6 +31,7 @@ class SpiralRobotExecutor(RobotExecutor):
         self.private_grid.add_tile_to_grid(self.robot, self.robot_coordinates.copy())
         self.start_offset = start_offset
         self.robot_coordinates = self.private_grid.get_coord_from_tile(robot)
+        self.spin = spin
         self.highway_executor = HighwayExecutor(
             shared_actions_executor=self.shared_actions_executor,
             spin=spin
@@ -62,12 +63,28 @@ class SpiralRobotExecutor(RobotExecutor):
                 return
         raise ValueError("all edges finished cannot update to next")
 
+    def _go_around(self):
+        source_position = self.edge.get_closest_source()
+        pre_source_position = self.spin.get_pre_corner_coordinates(source_position.coordinates)
+        print("ROBOT: " + str(self.robot) + "start go around to " + str(pre_source_position))
+        self.highway_executor.go_to_goal(pre_source_position)
+
     def start_process(self):
         # TODO: make sure logic is fine and test scenarios
         offset = self.start_offset
         self._go_get_source()
         line = self.edge.get_line(offset)
+        last_line = line
+        line_repeated = 0
         for i in range(SpiralRobotExecutor.loop_timeout):
+            if last_line == line:
+                line_repeated += 1
+            else:
+                line_repeated = 0
+            if line_repeated > 10:
+                self._go_around()
+                line_repeated = 0
+            last_line = line
             offset = self.edge.get_next_offset()
             self.highway_executor.go_to_line_start(line)
             self.line_scanner_executor.scan_line(line)
@@ -76,17 +93,20 @@ class SpiralRobotExecutor(RobotExecutor):
             if not self.edge.is_finished():
                 if self.robot.has_block():
                     line = self.edge.get_next_line()
-                    continue
+                    if line is not None:
+                        continue
                 self._update_to_next_edge()
                 self._go_get_source()
                 line = self.edge.get_line(offset)
                 continue
             if self._all_edges_finished():
-                # TODO: do end successful action maybe validate private grid and goal
+                print("ROBOT: "+str(self.robot)+"finished and thinks all good")
+                self.shared_actions_executor.finish_robot()
                 return
             self._update_to_next_edge()
             if not self.robot.has_block():
                 self._go_get_source()
             line = self.edge.get_line(offset)
-        # TODO: do end not successful action
+        print("ROBOT: "+str(self.robot)+", failed with timeout: "+str(self.loop_timeout))
+        self.shared_actions_executor.finish_robot()
         return

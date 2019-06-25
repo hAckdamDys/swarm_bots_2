@@ -32,6 +32,8 @@ class Coordinates:
         if self.x != to_coordinates.x and self.y != to_coordinates.y:
             raise ValueError("x or y coordinate must be same to get straight distance")
         if self.x == to_coordinates.x:
+            if self.y == to_coordinates.y:
+                return 0
             if direction.is_x_axis():
                 raise ValueError(f"wrong {direction} for straight distance between {self}, {to_coordinates}")
             if direction.is_x_or_y_rising():

@@ -21,28 +21,39 @@ class RobotSharedActionsExecutorWithSleep(RobotSharedActionsExecutor):
                  robot_coordinates: Coordinates, sleep_tick_seconds: float = 0.1):
         super().__init__(robot, shared_grid_access, private_grid, robot_coordinates)
         self.sleep_tick_seconds = sleep_tick_seconds
+        self.total_ticks = 0
 
     def try_rotate_robot(self, direction: Direction) -> HitInformation:
         if self.robot.rotation == direction:
             return HitInformation(HitType.ROTATED, updated_robot=self.robot)
         hit_information = super().try_rotate_robot(direction)
         time.sleep(self._rotate_time_ticks * self.sleep_tick_seconds)
+        self.total_ticks += self._rotate_time_ticks
         return hit_information
 
     def try_move_robot(self, direction: Direction) -> HitInformation:
         hit_information = super().try_move_robot(direction)
         time.sleep(self._move_time_ticks * self.sleep_tick_seconds)
+        self.total_ticks += self._move_time_ticks
         return hit_information
 
     def try_put_block(self, direction: Direction) -> HitInformation:
         hit_information = super().try_put_block(direction)
         time.sleep(self._put_block_time_ticks * self.sleep_tick_seconds)
+        self.total_ticks += self._put_block_time_ticks
         return hit_information
 
     def try_get_block(self, direction: Direction) -> HitInformation:
         hit_information = super().try_get_block(direction)
         time.sleep(self._get_block_time_ticks * self.sleep_tick_seconds)
+        self.total_ticks += self._get_block_time_ticks
         return hit_information
 
     def wait_action(self):
-        time.sleep(self._wait_time_ticks * self.sleep_tick_seconds * (0.9 + random() / 5))
+        ticks = self._wait_time_ticks * (0.9 + random() / 5)
+        time.sleep(self.sleep_tick_seconds * ticks)
+        self.total_ticks += ticks
+
+    def finish_robot(self):
+        print("ROBOT " + str(self.robot) + " finished in: " + str(self.total_ticks) + " ticks")
+        super().finish_robot()

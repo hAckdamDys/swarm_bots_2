@@ -50,7 +50,7 @@ class HighwayExecutor:
             hit_information = self.shared_actions_executor.try_move_robot(moving_direction)
             hit_type = hit_information.hit_type
 
-    def _go_to_goal(self, goal: Coordinates):
+    def go_to_goal(self, goal: Coordinates):
         goal = goal.copy()
         while not self._is_robot_on_same_edge_and_not_too_far(goal):
             robot_edge_side = self.robot_coordinates.get_edge_side(
@@ -84,7 +84,7 @@ class HighwayExecutor:
     # makes robot go to line start using highway
     def go_to_line_start(self, line: LineToMiddle):
         # direction_to_line_start = self.robot_coordinates.get_to_other_direction(line.start_coordinates)
-        self._go_to_goal(line.start_coordinates)
+        self.go_to_goal(line.start_coordinates)
 
     def go_get_source(self, source: SourcePosition):
         if self.robot.has_block():
@@ -97,7 +97,7 @@ class HighwayExecutor:
         if source_pos.y != 0 and source_pos.y != self.height - 1:
             raise ValueError("source need to be in corner but y coord is not")
         pre_source_pos = self.spin.get_pre_corner_coordinates(source_pos)
-        self._go_to_goal(pre_source_pos)
+        self.go_to_goal(pre_source_pos)
         to_source_direction = self.robot_coordinates.get_to_other_direction(source_pos)
         if self.robot.rotation != to_source_direction:
             self.shared_actions_executor.try_rotate_robot(to_source_direction)
