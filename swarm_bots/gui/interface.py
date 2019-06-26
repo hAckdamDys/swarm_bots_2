@@ -90,6 +90,16 @@ class CreateGridWindow(tk.Frame):
             for col_index in range(goal_building.width):
                 self.columnconfigure(col_index, weight=1)
                 btn = tk.Button(self, bg='grey76', command=lambda i=col_index, j=row_index: change_tile_type(i, j))
+                if row_index == 0 and col_index == 0:
+                    btn.configure(state='disabled')
+                if row_index == 0 and col_index == goal_building.width-1:
+                    btn.configure(state='disabled')
+                if row_index == goal_building.height-1 and col_index == 0:
+                    btn.configure(state='disabled')
+                if row_index == goal_building.height-1 and col_index == goal_building.width-1:
+                    btn.configure(state='disabled')
+                if row_index != 0 and col_index != 0 and row_index!= goal_building.height-1 and col_index!=goal_building.width-1:
+                    btn.configure(state='disabled')
                 btn.grid(row=row_index, column=col_index, sticky="nsew")
                 grid_window[col_index][row_index] = btn
 
@@ -190,11 +200,9 @@ class GridWindow(tk.Frame):
         self.shared_grid_access = controller.shared_grid_access
         self.controller = controller
         self.parent = parent
-        button1 = tk.Button(self, text=" > ", command=lambda: self.just_update())
-        button2 = tk.Button(self, text=">>", command=lambda: controller.show_frame(FinalGridWindow(parent, controller)))
+        self.button2 = tk.Button(self, state = 'disabled', text="Result",command=lambda: controller.show_frame(FinalGridWindow(parent, controller)))
         grid_inside = self.shared_grid_access.get_private_copy()
-        button1.grid(row=grid_inside.height + 1, columnspan=50)
-        button2.grid(row=grid_inside.height + 1, column=1, columnspan=50)
+        self.button2.grid(row=grid_inside.height + 1, column=1, columnspan=50)
         self.height = grid_inside.height
         self.width = grid_inside.width
         self.grid_window = [[None for y in range(self.height)] for x in range(self.width)]
@@ -231,6 +239,7 @@ class GridWindow(tk.Frame):
         else:
             for robot_executor in self.robot_executors:
                 robot_executor.wait_for_finish()
+            self.button2.configure(state='normal')
 
 
 class FinalGridWindow(tk.Frame):
@@ -240,8 +249,6 @@ class FinalGridWindow(tk.Frame):
         self.parent = parent
         self.controller = controller
         self.goal_building = controller.goal_building
-        # TODO: result building is not goal building it is controller.shared_grid.get private copy
-        # self.result_building = controller.goal_building
         self.result_building = controller.shared_grid_access.get_private_copy().block_tile_grid
 
         label = tk.Label(self, text="Result", font=controller.title_font)
