@@ -49,6 +49,7 @@ class HighwayExecutor:
         while hit_type != HitType.NO_HIT:
             hit_information = self.shared_actions_executor.try_move_robot(moving_direction)
             hit_type = hit_information.hit_type
+        print(f"robot: {self.robot.id} went around corner {moving_direction}:{next_direction}")
 
     def go_to_goal(self, goal: Coordinates):
         goal = goal.copy()

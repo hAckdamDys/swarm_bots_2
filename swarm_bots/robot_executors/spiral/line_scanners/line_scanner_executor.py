@@ -40,7 +40,7 @@ class LineScannerExecutor:
     def _move_to_block_from_inside(self,
                                    from_block_direction: Direction,
                                    before_block_coordinates: Coordinates):
-        print(f"robot: {self.robot}, move_to_block_from_inside {before_block_coordinates}")
+        # print(f"robot: {self.robot}, move_to_block_from_inside {before_block_coordinates}")
         while self.robot_coordinates != before_block_coordinates:
             hit_information = self.shared_actions_executor.try_move_robot(from_block_direction)
             if hit_information.hit_type == HitType.OBSTACLE:
@@ -57,8 +57,8 @@ class LineScannerExecutor:
         from_block_direction = line.get_from_block_direction()
         before_block_coordinates = line.get_next_block_position().create_neighbour_coordinate(from_block_direction)
         before_last_coordinates = line.get_last_position().create_neighbour_coordinate(from_block_direction)
-        print(f"robot: {self.robot}, start move_to_block_towards_inside, " +
-              f"before: {before_block_coordinates}, last: {before_last_coordinates}")
+        # print(f"robot: {self.robot}, start move_to_block_towards_inside, " +
+        #       f"before: {before_block_coordinates}, last: {before_last_coordinates}")
         # returns True when finished but False when still need to add block
         while self.robot_coordinates != before_last_coordinates:
             hit_information = self.shared_actions_executor.try_move_robot(to_block_direction)
@@ -67,7 +67,7 @@ class LineScannerExecutor:
             elif hit_information.hit_type == HitType.BLOCK:
                 placed_block_position: Coordinates = before_block_coordinates
                 discovered_block_position = self.robot_coordinates.create_neighbour_coordinate(to_block_direction)
-                print(f"robot: {self.robot}, hit block at {discovered_block_position}")
+                print(f"robot: {self.robot.id}, hit block at {discovered_block_position}")
                 if before_block_coordinates == discovered_block_position:
                     self._put_block_on_map(line)
                 while placed_block_position != discovered_block_position:
@@ -82,6 +82,8 @@ class LineScannerExecutor:
                 return False
             elif hit_information.hit_type == HitType.ROBOT:
                 # if we hit robot then he already put at least one new block and we continue with block elsewhere
+                other_robot_position = self.robot_coordinates.create_neighbour_coordinate(to_block_direction)
+                print(f"robot: {self.robot.id}, hit robot at {other_robot_position}")
                 self._go_back_to_start_line(from_block_direction, line.start_coordinates)
                 return True
         self.shared_actions_executor.try_rotate_robot(from_block_direction)
