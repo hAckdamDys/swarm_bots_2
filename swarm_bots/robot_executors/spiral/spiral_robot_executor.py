@@ -79,7 +79,6 @@ class SpiralRobotExecutor(RobotExecutor):
         self.highway_executor.go_to_goal(pre_source_position)
 
     def start_process(self):
-        # TODO: make sure logic is fine and test scenarios
         offset = self.start_offset
         self._go_get_source()
         line = self.edge.get_line(offset)
