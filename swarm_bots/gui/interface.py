@@ -230,13 +230,13 @@ class GridWindow(tk.Frame):
             try:
                 coordinate = grid_inside.get_coord_from_tile(tile)
                 if tile.tile_type == TileType.ROBOT:
-                    self.grid_window[coordinate.x][coordinate.y].configure(bg='yellow')
-                if tile.tile_type == TileType.OBSTACLE:
-                    self.grid_window[coordinate.x][coordinate.y].configure(bg='grey')
-                if tile.tile_type == TileType.SOURCE:
-                    self.grid_window[coordinate.x][coordinate.y].configure(bg='red')
-                if tile.tile_type == TileType.BLOCK:
-                    self.grid_window[coordinate.x][coordinate.y].configure(bg='blue')
+                    self.grid_window[coordinate.x][self.height-1-coordinate.y].configure(bg='yellow')
+                elif tile.tile_type == TileType.OBSTACLE:
+                    self.grid_window[coordinate.x][self.height-1-coordinate.y].configure(bg='grey')
+                elif tile.tile_type == TileType.SOURCE:
+                    self.grid_window[coordinate.x][self.height-1-coordinate.y].configure(bg='red')
+                elif tile.tile_type == TileType.BLOCK:
+                    self.grid_window[coordinate.x][self.height-1-coordinate.y].configure(bg='blue')
             except TileNotExistsException:
                 pass
                 # print(f"WARNING: {t}")
