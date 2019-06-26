@@ -4,11 +4,10 @@ from multiprocessing import Manager
 from tkinter import font as tkfont
 from tkinter import filedialog
 from tkinter import Label
-from typing import List
+from typing import List, Set
 
 from PIL import Image, ImageTk
 
-from swarm_bots.goal.goal_building_2d import GoalBuilding2D
 from swarm_bots.grid.errors.tile_not_exists_exception import TileNotExistsException
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.gui.grid_actions import create_grid_from_file
@@ -78,8 +77,9 @@ class CreateGridWindow(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.file = file
-        self.number_of_robots = 0
+        controller.number_of_robots = 0
         self.number_of_sources = 0
+        robots_pos_set: Set[Coordinates] = set()
 
         goal_building = create_grid_from_file(file)
         controller.goal_building = goal_building
@@ -115,42 +115,29 @@ class CreateGridWindow(tk.Frame):
         def change_tile_type(col, row):
             if grid_window[col][row].cget('bg') == 'grey76':
                 grid_window[col][row].configure(bg='yellow')
-                self.number_of_robots += 1
+                controller.number_of_robots += 1
+                robots_pos_set.add(Coordinates(col, row))
             elif grid_window[col][row].cget('bg') == 'yellow':
                 grid_window[col][row].configure(bg='grey76')
-                self.number_of_robots -= 1
-            if self.number_of_robots == 0:
+                controller.number_of_robots -= 1
+                robots_pos_set.remove(Coordinates(col, row))
+            if controller.number_of_robots == 0:
                 button.configure(state='disabled')
             else:
                 button.configure(state='normal')
 
         def create_simulation(parent, controller):
-            # text_grid = """
-            #        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-            #        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-            #        0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
-            #        0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0
-            #        0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 0 0 0
-            #        0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0
-            #        0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-            #        0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-            #        0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-            #        0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-            #        0 0 0 0 0 1 0 0 0 0 0 1 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-            #        0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 0 0 1 0 0
-            #        0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 0 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0
-            #        0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0
-            #        0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
-            #        0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-            #        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-            #        """
             robots: List[Robot] = list()
+            how_many_robots = controller.number_of_robots
             robots_pos: List[Coordinates] = list()
-            how_many_robots = 8
 
-            for i in range(how_many_robots):
-                robots.append(Robot(Direction.UP))
-                robots_pos.append(Coordinates(i + 1, 0))
+            id = 10000
+            for pos in robots_pos_set:
+                id += 1
+                robot = Robot(Direction.UP)
+                robot.id = id
+                robots.append(robot)
+                robots_pos.append(pos)
 
             base_grid = BaseGrid(goal_building.width, goal_building.height)
             base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, 0))
@@ -172,7 +159,6 @@ class CreateGridWindow(tk.Frame):
                     goal_to_edges_splitter=goal_to_edges_splitter,
                     spin=spin,
                     start_offset=i,
-                    start_edge_index=i % 4,
                     robot_coordinates=robots_pos[i],
                     sleep_tick_seconds=0.001
                 ))
