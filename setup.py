@@ -7,7 +7,7 @@ with open('readme.md') as f:
     readme = f.read()
 
 setup(name='swarm_bots',
-      version='0.3',
+      version='0.4',
       description='Multi-robot system coordination using swarm intelligence.',
       long_description=readme,
       url='https://github.com/hAckdamDys/swarm_bots_2',
