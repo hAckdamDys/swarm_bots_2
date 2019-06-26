@@ -8,7 +8,6 @@ from typing import List
 
 from PIL import Image, ImageTk
 
-from swarm_bots.goal.goal_building import GoalBuilding
 from swarm_bots.goal.goal_building_2d import GoalBuilding2D
 from swarm_bots.grid.errors.tile_not_exists_exception import TileNotExistsException
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
@@ -48,33 +47,32 @@ class Window(tk.Tk):
         self.show_frame(WelcomeWindow(parent=self.container, controller=self))
 
         text_grid = """
-               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 0 1 0 0 0 0 0
-               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
-               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
-               0 0 0 0 0 1 0 0 0 0 1 1 1 0 0 1 0 0 1 0 0 0 0 0
-               0 0 0 0 0 1 0 0 0 0 1 1 1 0 0 0 0 0 1 0 0 0 0 0
-               0 0 0 0 0 1 0 0 0 0 0 1 1 0 1 0 0 0 1 0 0 0 0 0
-               0 0 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0
-               0 0 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+               0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+               0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0
+               0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 0 0 0
+               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0
+               0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+               0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+               0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+               0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+               0 0 0 0 0 1 0 0 0 0 0 1 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+               0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 0 0 1 0 0
+               0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 0 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0
+               0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0
+               0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+               0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                """
         goal_building = GoalBuilding2D(text_grid=text_grid)
-        self.goal_building = goal_building
-        robot_1 = Robot(Direction.DOWN)
-        robot_1.id = 1000000001
-        robot_2 = Robot(Direction.UP)
-        robot_2.id = 1000000002
-        robot_1_coordinates = Coordinates(0, 3)
-        robot_2_coordinates = Coordinates(5, 0)
+        robots: List[Robot] = list()
+        robots_pos: List[Coordinates] = list()
+        how_many_robots = 16
+
+        for i in range(how_many_robots):
+            robots.append(Robot(Direction.UP))
+            robots_pos.append(Coordinates(i+1, 0))
 
         base_grid = BaseGrid(goal_building.width, goal_building.height)
         base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, 0))
@@ -83,48 +81,30 @@ class Window(tk.Tk):
         base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, goal_building.height-1))
 
         shared_grid_access = SharedGridAccess(base_grid, manager=Manager())
-        self.shared_grid_access = shared_grid_access
-        spin = Spin.CLOCKWISE
+        spin = Spin.ANTI_CLOCKWISE
         goal_to_edges_splitter = GoalToEdgesXSplitter(goal_building, spin)
 
-        robot_1_executor = SpiralRobotExecutor(
-            robot=robot_1,
-            shared_grid_access=shared_grid_access,
-            goal_building=goal_building,
-            goal_to_edges_splitter=goal_to_edges_splitter,
-            spin=spin,
-            start_offset=3,
-            start_edge_index=0,
-            robot_coordinates=robot_1_coordinates,
-            sleep_tick_seconds=0.01
-        )
-
-        robot_2_executor = SpiralRobotExecutor(
-            robot=robot_2,
-            shared_grid_access=shared_grid_access,
-            goal_building=goal_building,
-            goal_to_edges_splitter=goal_to_edges_splitter,
-            spin=spin,
-            start_offset=6,
-            start_edge_index=0,
-            robot_coordinates=robot_2_coordinates,
-            sleep_tick_seconds=0.01
-        )
+        robot_executors: List[RobotExecutor] = list()
+        for i in range(how_many_robots):
+            robot_executors.append(SpiralRobotExecutor(
+                robot=robots[i],
+                shared_grid_access=shared_grid_access,
+                goal_building=goal_building,
+                goal_to_edges_splitter=goal_to_edges_splitter,
+                spin=spin,
+                start_offset=i,
+                start_edge_index=i % 4,
+                robot_coordinates=robots_pos[i],
+                sleep_tick_seconds=0.01
+            ))
 
         with shared_grid_access.grid_lock_sync as grid:
-            grid.add_tile_to_grid(robot_1, robot_1_coordinates)
-            grid.add_tile_to_grid(robot_2, robot_2_coordinates)
+            for i in range(how_many_robots):
+                grid.add_tile_to_grid(robots[i], robots_pos[i])
 
-        self.robot_1_executor = robot_1_executor
-        self.robot_2_executor = robot_2_executor
+        self.robot_executors = robot_executors
         self.shared_grid_access = shared_grid_access
-        # robot_1_executor.start_working()
-        # robot_2_executor.start_working()
-
-        # robot_1_executor.wait_for_finish()
-        # robot_2_executor.wait_for_finish()
-
-        # grid = shared_grid_access.get_private_copy()
+        self.goal_building = goal_building
 
     def show_frame(self, frame):
         frame.grid(row=0, column=0, sticky="nsew")
@@ -200,16 +180,13 @@ class CreateGridWindow(tk.Frame):
         myvar.grid(column=goal_building.width + 1, row=10, columnspan=50, rowspan=50)
 
         def create_simulation(parent, controller):
-            controller.robot_1_executor.start_working()
-            controller.robot_2_executor.start_working()
-            robot_executors = [controller.robot_1_executor, controller.robot_2_executor]
+            for robot_executor in controller.robot_executors:
+                robot_executor.start_working()
             controller.show_frame(
                 GridWindow(
                     parent,
-                    controller,
-                    robot_executors
+                    controller
                 ))
-
 
         def change_tile_type(col, row):
             if grid_window[col][row].cget('bg') == 'grey76':
@@ -226,9 +203,9 @@ class CreateGridWindow(tk.Frame):
 
 class GridWindow(tk.Frame):
 
-    def __init__(self, parent, controller, robot_executors: List[RobotExecutor]):
+    def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.robot_executors = robot_executors
+        self.robot_executors: List[RobotExecutor] = controller.robot_executors
         self.goal_building = controller.goal_building
         self.shared_grid_access = controller.shared_grid_access
         self.controller = controller
