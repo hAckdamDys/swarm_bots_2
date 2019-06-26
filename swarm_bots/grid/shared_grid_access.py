@@ -22,14 +22,22 @@ class GridLockSync:
     def __init__(self, grid: BaseGrid, manager: Manager):
         self.lock = manager.Lock()
         self.grid = grid
+        # self.q = manager.Queue()
+        # self.q.put(self.grid)
         self.manager_list = manager.list()
         self.manager_list.append(grid)
 
     def sync_grid(self):
+        # print("syncing")
         self.grid = self.manager_list[0]
+        # self.grid = self.q.get()
+        # print("synced")
 
     def update_grid(self):
+        # print("updating")
         self.manager_list[0] = self.grid
+        # self.q.put(self.grid)
+        # print("updated")
 
     def __enter__(self):
         self.lock.acquire()
@@ -117,7 +125,7 @@ class SharedGridAccess:
                 tile = e.get_tile()
                 return HitInformation(HitType.from_tile_type(tile.get_type()), e)
             grid.update_tile(robot)
-            print("robot: ", robot, "placed to ", block_coordinates)
+            print(f"robot: {robot.id} placed to {block_coordinates}")
             return HitInformation(HitType.PLACED_BLOCK, updated_robot=robot)
 
     def try_get_block(self, robot: Robot, direction: Direction):

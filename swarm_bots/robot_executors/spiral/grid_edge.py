@@ -1,3 +1,4 @@
+import random
 from typing import List, Union
 
 from swarm_bots.robot_executors.spiral.line_to_middle import LineToMiddle
@@ -16,6 +17,7 @@ class GridEdge:
                  edge_side: Direction,
                  spin: Spin
                  ):
+        self.edge_side = edge_side
         self.spin = spin
         self.closest_source = spun_positions.get_position(edge_side)
         self.should_reverse_indexes = spin.should_edge_reverse_indexes(edge_side=edge_side)
@@ -45,12 +47,11 @@ class GridEdge:
     def get_next_line(self) -> Union[LineToMiddle, None]:
         if self.last_offset >= (self.length - self.how_many_finished):
             return None
-        self.last_offset += 1
-        offset = self.length - self.how_many_finished - 1 - self.last_offset
-        return self.get_line(offset)
+        self.last_offset += random.randint(1, 3)
+        return self.get_line(self.last_offset)
 
     def get_next_offset(self) -> int:
-        return self.last_offset + 3
+        return self.last_offset + random.randint(1, self.length)
 
     def is_finished(self) -> bool:
         return self.how_many_finished == self.length

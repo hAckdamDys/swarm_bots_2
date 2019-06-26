@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - python setup.py install
+# command to run tests
+script:
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then python -m unittest; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then cd tests; python -m unittest; fi'
