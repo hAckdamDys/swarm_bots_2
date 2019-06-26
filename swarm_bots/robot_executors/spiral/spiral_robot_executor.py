@@ -25,7 +25,7 @@ class SpiralRobotExecutor(RobotExecutor):
                  sleep_tick_seconds: float = None,
                  robot_coordinates: Coordinates = None,
                  start_offset: int = 0,
-                 start_edge_index: int = 0):
+                 start_edge_index: int = None):
         super().__init__(robot, shared_grid_access, goal_building, robot_coordinates=robot_coordinates,
                          sleep_tick_seconds=sleep_tick_seconds)
         self.private_grid.add_tile_to_grid(self.robot, self.robot_coordinates.copy())
@@ -37,8 +37,18 @@ class SpiralRobotExecutor(RobotExecutor):
             spin=spin
         )
         self.edges: List[GridEdge] = goal_to_edges_splitter.get_edges()
-        self.edge_index = start_edge_index
-        self.edge = self.edges[self.edge_index % 4]
+        if start_edge_index is None:
+            edge_side = robot_coordinates.get_edge_side(width=goal_building.width, height=goal_building.height)
+            next_side = spin.get_edge_move_direction(edge_side)
+            for i in range(0, 4):
+                self.edge_index = i
+                self.edge = self.edges[self.edge_index]
+                if next_side == self.edge.edge_side:
+                    print(f"robot: {robot} got side {next_side}")
+                    break
+        else:
+            self.edge_index = start_edge_index
+            self.edge = self.edges[self.edge_index % 4]
         print(f"robot: {self.robot.id} edge side: {self.edge.edge_side}")
         self.line_scanner_executor = LineScannerExecutor(
             shared_actions_executor=self.shared_actions_executor
