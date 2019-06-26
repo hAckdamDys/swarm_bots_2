@@ -6,5 +6,4 @@ install:
   - python setup.py install
 # command to run tests
 script:
-  - cd tests; python -m unittest
-  - [[ ! -z "$TRAVIS_PULL_REQUEST" ]] && cd use_cases; python -m unittest
+  - cd tests; python -m unittest && [[ ! -z "$TRAVIS_PULL_REQUEST" ]] && cd use_cases; python -m unittest
