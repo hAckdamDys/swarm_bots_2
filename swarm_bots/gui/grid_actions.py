@@ -14,7 +14,8 @@ def create_grid_from_file(file):
         for i in range(a.size[0]):
             if pix[i, j] == (0, 0, 0, persistance):
                 converted_image += "1"
-            elif pix[i, j] == (255, 255, 255, persistance):
+            # elif pix[i, j] == (255, 255, 255, persistance):
+            else:
                 converted_image += "0"
             if a.size[0]-i > 1:
                 converted_image += " "

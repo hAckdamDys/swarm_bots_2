@@ -46,76 +46,9 @@ class Window(tk.Tk):
 
         self.show_frame(WelcomeWindow(parent=self.container, controller=self))
 
-        text_grid = """
-               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 0 0 0
-               0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0
-               0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-               0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-               0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-               0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-               0 0 0 0 0 1 0 0 0 0 0 1 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
-               0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 0 0 1 0 0
-               0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 0 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0
-               0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-               """
-        goal_building = GoalBuilding2D(text_grid=text_grid)
-        robots: List[Robot] = list()
-        robots_pos: List[Coordinates] = list()
-        how_many_robots = 16
-
-        for i in range(how_many_robots):
-            robots.append(Robot(Direction.UP))
-            robots_pos.append(Coordinates(i+1, 0))
-
-        base_grid = BaseGrid(goal_building.width, goal_building.height)
-        base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, 0))
-        base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(goal_building.width-1, 0))
-        base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(goal_building.width-1, goal_building.height-1))
-        base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, goal_building.height-1))
-
-        shared_grid_access = SharedGridAccess(base_grid, manager=Manager())
-        spin = Spin.ANTI_CLOCKWISE
-        goal_to_edges_splitter = GoalToEdgesXSplitter(goal_building, spin)
-
-        robot_executors: List[RobotExecutor] = list()
-        for i in range(how_many_robots):
-            robot_executors.append(SpiralRobotExecutor(
-                robot=robots[i],
-                shared_grid_access=shared_grid_access,
-                goal_building=goal_building,
-                goal_to_edges_splitter=goal_to_edges_splitter,
-                spin=spin,
-                start_offset=i,
-                start_edge_index=i % 4,
-                robot_coordinates=robots_pos[i],
-                sleep_tick_seconds=0.01
-            ))
-
-        with shared_grid_access.grid_lock_sync as grid:
-            for i in range(how_many_robots):
-                grid.add_tile_to_grid(robots[i], robots_pos[i])
-
-        self.robot_executors = robot_executors
-        self.shared_grid_access = shared_grid_access
-        self.goal_building = goal_building
-
     def show_frame(self, frame):
         frame.grid(row=0, column=0, sticky="nsew")
         frame.tkraise()
-
-    def set_grid(self, grid_inside: BaseGrid):
-        self.base_grid = grid_inside
-
-    def get_grid(self):
-        grid = self.shared_grid_access.get_private_copy()
-        return grid
 
 
 class WelcomeWindow(tk.Frame):
@@ -179,15 +112,6 @@ class CreateGridWindow(tk.Frame):
         myvar.image = img
         myvar.grid(column=goal_building.width + 1, row=10, columnspan=50, rowspan=50)
 
-        def create_simulation(parent, controller):
-            for robot_executor in controller.robot_executors:
-                robot_executor.start_working()
-            controller.show_frame(
-                GridWindow(
-                    parent,
-                    controller
-                ))
-
         def change_tile_type(col, row):
             if grid_window[col][row].cget('bg') == 'grey76':
                 grid_window[col][row].configure(bg='yellow')
@@ -199,6 +123,76 @@ class CreateGridWindow(tk.Frame):
                 button.configure(state='disabled')
             else:
                 button.configure(state='normal')
+
+        def create_simulation(parent, controller):
+            # text_grid = """
+            #        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+            #        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+            #        0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+            #        0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0
+            #        0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 0 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 0 0 0
+            #        0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0
+            #        0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+            #        0 0 0 0 0 1 0 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+            #        0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 1 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+            #        0 0 0 0 0 1 0 0 0 0 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+            #        0 0 0 0 0 1 0 0 0 0 0 1 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 1 0 1 0 0
+            #        0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 1 1 0 0 1 0 1 0 1 0 0 1 0 0 0 0 0 1 0 0
+            #        0 0 0 0 0 1 0 0 1 0 0 0 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 1 1 1 1 0 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0
+            #        0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0
+            #        0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+            #        0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+            #        0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+            #        """
+            robots: List[Robot] = list()
+            robots_pos: List[Coordinates] = list()
+            how_many_robots = 8
+
+            for i in range(how_many_robots):
+                robots.append(Robot(Direction.UP))
+                robots_pos.append(Coordinates(i + 1, 0))
+
+            base_grid = BaseGrid(goal_building.width, goal_building.height)
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, 0))
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(goal_building.width - 1, 0))
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE),
+                                       Coordinates(goal_building.width - 1, goal_building.height - 1))
+            base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, goal_building.height - 1))
+
+            shared_grid_access = SharedGridAccess(base_grid, manager=Manager())
+            spin = Spin.ANTI_CLOCKWISE
+            goal_to_edges_splitter = GoalToEdgesXSplitter(goal_building, spin)
+
+            robot_executors: List[RobotExecutor] = list()
+            for i in range(how_many_robots):
+                robot_executors.append(SpiralRobotExecutor(
+                    robot=robots[i],
+                    shared_grid_access=shared_grid_access,
+                    goal_building=goal_building,
+                    goal_to_edges_splitter=goal_to_edges_splitter,
+                    spin=spin,
+                    start_offset=i,
+                    start_edge_index=i % 4,
+                    robot_coordinates=robots_pos[i],
+                    sleep_tick_seconds=0.001
+                ))
+
+            with shared_grid_access.grid_lock_sync as grid:
+                for i in range(how_many_robots):
+                    grid.add_tile_to_grid(robots[i], robots_pos[i])
+
+            controller.robot_executors = robot_executors
+            controller.shared_grid_access = shared_grid_access
+            controller.goal_building = goal_building
+
+            for robot_executor in controller.robot_executors:
+                robot_executor.start_working()
+
+            controller.show_frame(
+                GridWindow(
+                    parent,
+                    controller
+                ))
 
 
 class GridWindow(tk.Frame):
@@ -243,10 +237,11 @@ class GridWindow(tk.Frame):
                     self.grid_window[coordinate.x][coordinate.y].configure(bg='red')
                 if tile.tile_type == TileType.BLOCK:
                     self.grid_window[coordinate.x][coordinate.y].configure(bg='blue')
-            except TileNotExistsException as t:
-                print(f"WARNING: {t}")
+            except TileNotExistsException:
+                pass
+                # print(f"WARNING: {t}")
         if not self.goal_building.validate_grid(grid_inside):
-            self.parent.after(100, self.just_update)
+            self.parent.after(300, self.just_update)
         else:
             for robot_executor in self.robot_executors:
                 robot_executor.wait_for_finish()
@@ -259,7 +254,9 @@ class FinalGridWindow(tk.Frame):
         self.parent = parent
         self.controller = controller
         self.goal_building = controller.goal_building
-        self.result_building = controller.goal_building
+        # TODO: result building is not goal building it is controller.shared_grid.get private copy
+        # self.result_building = controller.goal_building
+        self.result_building = controller.shared_grid_access.get_private_copy().block_tile_grid
 
         label = tk.Label(self, text="Result", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
@@ -275,8 +272,8 @@ class FinalGridWindow(tk.Frame):
         x = ws - 25 - SIZE
         y = (hs / 2) - (SIZE / 2)
         result_building_window.geometry('%dx%d+%d+%d' % (SIZE, SIZE, x, y))
-        print_grid(result_building_window, convert_global_grid_to_local(self.result_building),
-                   self.result_building.height, self.result_building.width)
+        print_grid(result_building_window, self.result_building[..., ::-1],
+                   self.goal_building.height, self.goal_building.width)
 
         goal_building_window = tk.Toplevel()
         goal_building_window.title('Goal Building')
