@@ -13,7 +13,6 @@ from swarm_bots.utils.spin import Spin
 
 
 class SpiralRobotExecutor(RobotExecutor):
-    # TODO: add timeout to init maybe
     loop_timeout = 100000
 
     def __init__(self,
@@ -36,6 +35,9 @@ class SpiralRobotExecutor(RobotExecutor):
             shared_actions_executor=self.shared_actions_executor,
             spin=spin
         )
+        self.line_scanner_executor = LineScannerExecutor(
+            shared_actions_executor=self.shared_actions_executor
+        )
         self.edges: List[GridEdge] = goal_to_edges_splitter.get_edges()
         if start_edge_index is None:
             edge_side = robot_coordinates.get_edge_side(width=goal_building.width, height=goal_building.height)
@@ -49,10 +51,6 @@ class SpiralRobotExecutor(RobotExecutor):
         else:
             self.edge_index = start_edge_index
             self.edge = self.edges[self.edge_index % 4]
-        print(f"robot: {self.robot.id} edge side: {self.edge.edge_side}")
-        self.line_scanner_executor = LineScannerExecutor(
-            shared_actions_executor=self.shared_actions_executor
-        )
 
     def _all_edges_finished(self) -> bool:
         all_finished = True
