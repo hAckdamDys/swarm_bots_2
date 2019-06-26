@@ -39,6 +39,7 @@ class SpiralRobotExecutor(RobotExecutor):
         self.edges: List[GridEdge] = goal_to_edges_splitter.get_edges()
         self.edge_index = start_edge_index
         self.edge = self.edges[self.edge_index % 4]
+        print(f"robot: {self.robot.id} edge side: {self.edge.edge_side}")
         self.line_scanner_executor = LineScannerExecutor(
             shared_actions_executor=self.shared_actions_executor
         )
@@ -81,7 +82,7 @@ class SpiralRobotExecutor(RobotExecutor):
                 line_repeated += 1
             else:
                 line_repeated = 0
-            if line_repeated > 10:
+            if line_repeated > 1:
                 self._go_around()
                 line_repeated = 0
             last_line = line
