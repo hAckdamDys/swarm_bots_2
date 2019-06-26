@@ -4,13 +4,17 @@ from multiprocessing import Manager
 from tkinter import font as tkfont
 from tkinter import filedialog
 from tkinter import Label
+from typing import List
+
 from PIL import Image, ImageTk
 
+from swarm_bots.goal.goal_building import GoalBuilding
 from swarm_bots.goal.goal_building_2d import GoalBuilding2D
 from swarm_bots.grid.errors.tile_not_exists_exception import TileNotExistsException
 from swarm_bots.grid.shared_grid_access import SharedGridAccess
 from swarm_bots.gui.grid_actions import create_grid_from_file
 from swarm_bots.gui.grid_actions import calculate_procentage_difference
+from swarm_bots.robot_executors.robot_executor import RobotExecutor
 from swarm_bots.robot_executors.spiral.goal_to_edges_splitters.goal_to_edges_x_splitter import GoalToEdgesXSplitter
 from swarm_bots.robot_executors.spiral.spiral_robot_executor import SpiralRobotExecutor
 from swarm_bots.tiles.robot import Robot
@@ -64,6 +68,7 @@ class Window(tk.Tk):
                0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                """
         goal_building = GoalBuilding2D(text_grid=text_grid)
+        self.goal_building = goal_building
         robot_1 = Robot(Direction.DOWN)
         robot_1.id = 1000000001
         robot_2 = Robot(Direction.UP)
@@ -78,6 +83,7 @@ class Window(tk.Tk):
         base_grid.add_tile_to_grid(Tile(TileType.SOURCE), Coordinates(0, goal_building.height-1))
 
         shared_grid_access = SharedGridAccess(base_grid, manager=Manager())
+        self.shared_grid_access = shared_grid_access
         spin = Spin.CLOCKWISE
         goal_to_edges_splitter = GoalToEdgesXSplitter(goal_building, spin)
 
@@ -90,7 +96,7 @@ class Window(tk.Tk):
             start_offset=3,
             start_edge_index=0,
             robot_coordinates=robot_1_coordinates,
-            sleep_tick_seconds=0.0001
+            sleep_tick_seconds=0.01
         )
 
         robot_2_executor = SpiralRobotExecutor(
@@ -102,7 +108,7 @@ class Window(tk.Tk):
             start_offset=6,
             start_edge_index=0,
             robot_coordinates=robot_2_coordinates,
-            sleep_tick_seconds=0.0001
+            sleep_tick_seconds=0.01
         )
 
         with shared_grid_access.grid_lock_sync as grid:
@@ -196,7 +202,14 @@ class CreateGridWindow(tk.Frame):
         def create_simulation(parent, controller):
             controller.robot_1_executor.start_working()
             controller.robot_2_executor.start_working()
-            controller.show_frame(GridWindow(parent, controller, controller.get_grid()))
+            robot_executors = [controller.robot_1_executor, controller.robot_2_executor]
+            controller.show_frame(
+                GridWindow(
+                    parent,
+                    controller,
+                    robot_executors
+                ))
+
 
         def change_tile_type(col, row):
             if grid_window[col][row].cget('bg') == 'grey76':
@@ -213,40 +226,53 @@ class CreateGridWindow(tk.Frame):
 
 class GridWindow(tk.Frame):
 
-    def __init__(self, parent, controller, grid_inside):
+    def __init__(self, parent, controller, robot_executors: List[RobotExecutor]):
         tk.Frame.__init__(self, parent)
+        self.robot_executors = robot_executors
+        self.goal_building = controller.goal_building
+        self.shared_grid_access = controller.shared_grid_access
         self.controller = controller
-        self.grid_inside = grid_inside
-
-        button1 = tk.Button(self, text=" > ", command=lambda: controller.show_frame(GridWindow(parent, controller,
-                                                                                               controller.get_grid())))
+        self.parent = parent
+        button1 = tk.Button(self, text=" > ", command=lambda: self.just_update())
         button2 = tk.Button(self, text=">>", command=lambda: controller.show_frame(FinalGridWindow(parent, controller)))
-        button1.grid(row=self.grid_inside.height + 1, columnspan=50)
-        button2.grid(row=self.grid_inside.height + 1, column=1, columnspan=50)
-        grid_inside = self.controller.get_grid()
-        height = grid_inside.height
-        width = grid_inside.width
-        grid_window = [[None for y in range(height)] for x in range(width)]
-        for row in range(height):
+        grid_inside = self.shared_grid_access.get_private_copy()
+        button1.grid(row=grid_inside.height + 1, columnspan=50)
+        button2.grid(row=grid_inside.height + 1, column=1, columnspan=50)
+        self.height = grid_inside.height
+        self.width = grid_inside.width
+        self.grid_window = [[None for y in range(self.height)] for x in range(self.width)]
+        for row in range(self.height):
             self.rowconfigure(row, weight=1)
-            for col in range(width):
+            for col in range(self.width):
                 self.columnconfigure(col, weight=1)
                 btn = tk.Button(self, state='disabled', bg='grey76')
                 btn.grid(row=row, column=col, sticky="nsew")
-                grid_window[col][row] = btn
+                self.grid_window[col][row] = btn
+        self.parent.after(0, self.just_update)
+
+    def just_update(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                self.grid_window[x][y].configure(bg='grey76')
+        grid_inside = self.shared_grid_access.get_private_copy()
         for tile_index, tile in grid_inside.tiles_from_index.items():
             try:
                 coordinate = grid_inside.get_coord_from_tile(tile)
                 if tile.tile_type == TileType.ROBOT:
-                    grid_window[coordinate.x][coordinate.y].configure(bg='yellow')
+                    self.grid_window[coordinate.x][coordinate.y].configure(bg='yellow')
                 if tile.tile_type == TileType.OBSTACLE:
-                    grid_window[coordinate.x][coordinate.y].configure(bg='grey')
+                    self.grid_window[coordinate.x][coordinate.y].configure(bg='grey')
                 if tile.tile_type == TileType.SOURCE:
-                    grid_window[coordinate.x][coordinate.y].configure(bg='red')
+                    self.grid_window[coordinate.x][coordinate.y].configure(bg='red')
                 if tile.tile_type == TileType.BLOCK:
-                    grid_window[coordinate.x][coordinate.y].configure(bg='blue')
+                    self.grid_window[coordinate.x][coordinate.y].configure(bg='blue')
             except TileNotExistsException as t:
                 print(f"WARNING: {t}")
+        if not self.goal_building.validate_grid(grid_inside):
+            self.parent.after(100, self.just_update)
+        else:
+            for robot_executor in self.robot_executors:
+                robot_executor.wait_for_finish()
 
 
 class FinalGridWindow(tk.Frame):
