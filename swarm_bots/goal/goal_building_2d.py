@@ -1,5 +1,4 @@
 import numpy as np
-import os
 
 
 # static grid where there are only goal
@@ -12,7 +11,7 @@ class GoalBuilding2D(GoalBuilding):
         self.dtype = bool
         super().parse_text_grid(text_grid)
 
-    def validate_grid(self, base_grid: BaseGrid):
+    def validate_grid(self, base_grid: BaseGrid) -> bool:
         base_block_grid = base_grid.get_block_grid()
         return np.array_equal(base_block_grid, self.grid)
 

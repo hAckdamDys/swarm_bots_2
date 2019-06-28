@@ -29,7 +29,7 @@ class GoalBuilding:
         self.grid = self.grid.T
         self.grid = np.flip(self.grid, 1)
 
-    def validate_grid(self, base_grid: BaseGrid):
+    def validate_grid(self, base_grid: BaseGrid) -> bool:
         # TODO: implement when 3d coordinates will exist
         raise NotImplementedError()
 

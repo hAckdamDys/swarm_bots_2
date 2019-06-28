@@ -3,12 +3,12 @@ from typing import Union, Dict
 
 import numpy as np
 
-from swarm_bots.grid.add_duplicate_tile_error import AddDuplicateTileError
-from swarm_bots.grid.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
-from swarm_bots.grid.tile_already_added_exception import TileAlreadyAddedException
-from swarm_bots.grid.tile_not_source_error import TileNotSourceError
-from swarm_bots.grid.tile_taken_exception import TileTakenException
-from swarm_bots.grid.tile_not_exists_exception import TileNotExistsException
+from swarm_bots.grid.errors.add_duplicate_tile_error import AddDuplicateTileError
+from swarm_bots.grid.errors.out_of_bound_coordinates_error import OutOfBoundCoordinatesError
+from swarm_bots.grid.errors.tile_already_added_exception import TileAlreadyAddedException
+from swarm_bots.grid.errors.tile_not_source_error import TileNotSourceError
+from swarm_bots.grid.errors.tile_taken_exception import TileTakenException
+from swarm_bots.grid.errors.tile_not_exists_exception import TileNotExistsException
 from swarm_bots.tiles.tile import Tile, TileType
 from swarm_bots.utils.coordinates import Coordinates
 

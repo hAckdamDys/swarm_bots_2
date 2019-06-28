@@ -17,6 +17,34 @@ class Coordinates:
             return Direction.RIGHT
         return Direction.LEFT
 
+    def get_edge_side(self, width: int, height: int) -> Direction:
+        if (self.x == 0 or self.x == width) and (self.y == 0 or self.y == height):
+            raise ValueError("cannot get edge from corner")
+        if self.x == 0:
+            return Direction.LEFT
+        elif self.x == width - 1:
+            return Direction.RIGHT
+        elif self.y == 0:
+            return Direction.DOWN
+        return Direction.UP
+
+    def get_straight_distance_to_other(self, direction: Direction, to_coordinates: 'Coordinates') -> int:
+        if self.x != to_coordinates.x and self.y != to_coordinates.y:
+            raise ValueError("x or y coordinate must be same to get straight distance")
+        if self.x == to_coordinates.x:
+            if self.y == to_coordinates.y:
+                return 0
+            if direction.is_x_axis():
+                raise ValueError(f"wrong {direction} for straight distance between {self}, {to_coordinates}")
+            if direction.is_x_or_y_rising():
+                return to_coordinates.y - self.y
+            return -(to_coordinates.y - self.y)
+        if not direction.is_x_axis():
+            raise ValueError(f"wrong {direction} for straight distance between {self}, {to_coordinates}")
+        if direction.is_x_or_y_rising():
+            return to_coordinates.x - self.x
+        return -(to_coordinates.x - self.x)
+
     def get_array_index(self):
         return self.x, self.y
 
@@ -52,3 +80,6 @@ class Coordinates:
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
+
+    def __hash__(self):
+        return hash((self.x, self.y))
