@@ -24,7 +24,7 @@ from swarm_bots.utils.direction import Direction
 from swarm_bots.utils.spin import Spin
 
 SIZE = 400
-MENU_OPTION_PICTURE_PATH = os.path.dirname(os.path.realpath(__file__)) + f'{os.linesep}images{os.linesep}menu.png'
+MENU_OPTION_PICTURE_PATH = os.path.dirname(os.path.realpath(__file__)) + f'{os.pathsep}images{os.pathsep}menu.png'
 
 
 class Window(tk.Tk):
