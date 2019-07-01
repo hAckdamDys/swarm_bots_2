@@ -47,11 +47,11 @@ class GridEdge:
     def get_next_line(self) -> Union[LineToMiddle, None]:
         if self.last_offset >= (self.length - self.how_many_finished):
             return None
-        self.last_offset += random.randint(1, 3)
+        self.last_offset += 1
         return self.get_line(self.last_offset)
 
     def get_next_offset(self) -> int:
-        return self.last_offset + random.randint(1, self.length)
+        return 0
 
     def is_finished(self) -> bool:
         return self.how_many_finished == self.length
