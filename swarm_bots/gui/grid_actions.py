@@ -12,7 +12,7 @@ def create_grid_from_file(file):
     converted_image += "\n            "
     for j in range(a.size[1]):
         for i in range(a.size[0]):
-            if pix[i, j] == (0, 0, 0, persistance):
+            if pix[i, j] != (255, 255, 255, 255):
                 converted_image += "1"
             # elif pix[i, j] == (255, 255, 255, persistance):
             else:

@@ -24,7 +24,7 @@ from swarm_bots.utils.direction import Direction
 from swarm_bots.utils.spin import Spin
 
 SIZE = 400
-MENU_OPTION_PICTURE_PATH = os.path.dirname(os.path.realpath(__file__)) + r'\images\menu.png'
+MENU_OPTION_PICTURE_PATH = os.path.dirname(os.path.realpath(__file__)) + f'{os.linesep}images{os.linesep}menu.png'
 
 
 class Window(tk.Tk):
@@ -170,7 +170,7 @@ class CreateGridWindow(tk.Frame):
                     spin=spin,
                     start_offset=i,
                     robot_coordinates=robots_pos[i],
-                    sleep_tick_seconds=0.001
+                    sleep_tick_seconds=0
                 ))
 
             with shared_grid_access.grid_lock_sync as grid:
